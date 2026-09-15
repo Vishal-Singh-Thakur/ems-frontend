@@ -26,6 +26,8 @@
     @apply text-slate-500;
   }
 
+  
+
   /* Native pickers (date/time) render their icons black-on-black otherwise. */
   .dark input[type='date']::-webkit-calendar-picker-indicator,
   .dark input[type='time']::-webkit-calendar-picker-indicator,
