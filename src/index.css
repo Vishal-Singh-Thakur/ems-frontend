@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* The page floor. Everything above it is slate-800 cards, so this also covers
+     overscroll areas and any screen that doesn't paint its own background. */
+  html {
+    @apply bg-white dark:bg-slate-900;
+  }
+
+  body {
+    @apply text-gray-800 dark:text-slate-200;
+  }
+
+  /* Inputs that rely on the browser default background — with no bg class of
+     their own they'd stay white on a dark card. */
+  .dark input:not([type='checkbox']):not([type='radio']),
+  .dark select,
+  .dark textarea {
+    @apply bg-slate-800 text-slate-100 border-slate-700;
+  }
+
+  .dark input::placeholder,
+  .dark textarea::placeholder {
+    @apply text-slate-500;
+  }
+
+  /* Native pickers (date/time) render their icons black-on-black otherwise. */
+  .dark input[type='date']::-webkit-calendar-picker-indicator,
+  .dark input[type='time']::-webkit-calendar-picker-indicator,
+  .dark input[type='month']::-webkit-calendar-picker-indicator {
+    filter: invert(1) opacity(0.7);
+  }
+
+  .dark ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  .dark ::-webkit-scrollbar-track {
+    @apply bg-slate-900;
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    @apply bg-slate-700 rounded-full;
+  }
+}
