@@ -335,7 +335,7 @@ const Login = ({ onLogin }) => {  // ✅ onLogin prop receive karein
       if (res?.success && user) {
         // Temporarily store password so ForcePasswordChangeModal can use it silently
         // when user must change password on first login. Cleared after use.
-        try { sessionStorage.setItem('_pendingPwd', formData.password); } catch (_) {}
+        try { sessionStorage.setItem('_pendingPwd', formData.password); } catch { /* best effort */ }
         onLogin(user);
       } else {
         setLoginError(res?.message || 'Invalid email or password');

@@ -10,6 +10,7 @@ import {
   ExpenseCancelAPI, ExpenseByIdAPI
 } from "../components/Constant/Api/Api";
 import { hasPermission } from "../Utils/roleUtils";
+import { notifyError, notifyResult, notifyOk } from "../Utils/notify";
 
 const STATUS_STYLES = {
   Pending:   "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-300 dark:border-amber-500/30",
@@ -72,8 +73,12 @@ const ClaimForm = ({ categories, editing, onDone, onCancel }) => {
       const r = editing
         ? await ApiHit(ExpenseByIdAPI(editing._id), "PATCH", fd)
         : await ApiHit(ExpenseCreateAPI, "POST", fd);
-      if (r?.success) onDone();
-      else setError(r?.message || "Could not save the claim.");
+      if (r?.success) {
+        notifyOk(editing ? "Claim updated" : "Claim submitted");
+        onDone();
+      } else {
+        setError(r?.message || "Could not save the claim.");
+      }
     } catch {
       setError("Could not reach the server.");
     } finally {
@@ -179,7 +184,12 @@ const PayDialog = ({ claim, modes, onDone, onCancel }) => {
     setBusy(true); setError("");
     const r = await ApiHit(ExpensePayAPI(claim._id), "PATCH", form);
     setBusy(false);
-    if (r?.success) onDone(); else setError(r?.message || "Could not record the payment.");
+    if (r?.success) {
+      notifyOk(`Payment recorded for ${claim.employee?.name}`);
+      onDone();
+    } else {
+      setError(r?.message || "Could not record the payment.");
+    }
   };
 
   return (
@@ -311,14 +321,16 @@ const Expenses = ({ user }) => {
   const act = async (url, body, confirmText) => {
     if (confirmText && !window.confirm(confirmText)) return;
     const r = await ApiHit(url, "PATCH", body || {});
-    if (!r?.success) window.alert(r?.message || "That action failed.");
+    // The server's own wording, on success as well as failure — so "Expense
+    // claim approved" and "2 assets not yet returned" read the same way.
+    notifyResult(r, r?.message);
     load();
   };
 
   const reject = (claim) => {
     const reason = window.prompt(`Why is ${claim.employee?.name}'s claim being rejected?`);
     if (reason === null) return;
-    if (!reason.trim()) return window.alert("A rejection reason is required.");
+    if (!reason.trim()) return notifyError("A rejection reason is required.");
     act(ExpenseRejectAPI(claim._id), { reason: reason.trim() });
   };
 

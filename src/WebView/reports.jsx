@@ -1,13 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { BarChart3, Search, RotateCcw, Download, Calendar, Users, ClipboardList, Clock, IdCard } from "lucide-react";
 import ApiHit from "../Utils/ApiHit";
-import {
-  GetAllLeavesAPI,
-  GetAttendanceReportsAPI,
-  GetAllEmployeesAPI,
-  GetAllUsersAPI,
-  GetMyTeamAPI,
-} from "../components/Constant/Api/Api";
+import { GetAllLeavesAPI, GetAttendanceReportsAPI, GetAllEmployeesAPI, GetAllUsersAPI, GetMyTeamAPI } from "../components/Constant/Api/Api";
 import Pagination from "../components/Pagination";
 
 const PAGE_SIZE = 5;
@@ -419,7 +413,7 @@ const Reports = ({ user }) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {pagedActive.map((r, i) => (
+                    {pagedActive.map((r) => (
                       <tr key={r._id} className="border-b border-gray-100 dark:border-slate-800 hover:bg-gray-50/70 dark:hover:bg-slate-800/70 transition">
                         <td className="py-3 px-4"><EmpIdPill value={attEmpId(r)} /></td>
                         <td className="py-3 px-4 text-gray-700 dark:text-slate-200 whitespace-nowrap">{fmtDate(r.date)}</td>
@@ -454,7 +448,7 @@ const Reports = ({ user }) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {pagedActive.map((r, i) => (
+                    {pagedActive.map((r) => (
                       <tr key={r._id} className="border-b border-gray-100 dark:border-slate-800 hover:bg-gray-50/70 dark:hover:bg-slate-800/70 transition">
                         <td className="py-3 px-4"><EmpIdPill value={attEmpId(r)} /></td>
                         <td className="py-3 px-4">
@@ -486,7 +480,7 @@ const Reports = ({ user }) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {pagedActive.map((r, i) => {
+                    {pagedActive.map((r) => {
                       const name = empName(r);
                       const email = empEmail(r);
                       const dept = empDeptName(r);

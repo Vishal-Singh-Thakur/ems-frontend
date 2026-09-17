@@ -42,7 +42,6 @@ const Payroll = ({ user }) => {
   const [viewSlip, setViewSlip] = useState(null);
 
   const nowY = new Date().getFullYear();
-  const nowM = new Date().getMonth() + 1;
 
   const [monthFilter, setMonthFilter] = useState('all');
   const [yearFilter, setYearFilter] = useState('all');

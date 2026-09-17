@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { ListChecks, Plus, Search, Filter, Trash2, Pencil, Calendar, User as UserIcon, Flag } from "lucide-react";
+import { ListChecks, Plus, Search, Filter, Trash2, Pencil, Calendar, Flag } from "lucide-react";
 import ApiHit from "../Utils/ApiHit";
 import { GetAllTasksAPI, DeleteTaskAPI } from "../components/Constant/Api/Api";
 import AddTaskModal from "../components/Manager/AddTaskModal";

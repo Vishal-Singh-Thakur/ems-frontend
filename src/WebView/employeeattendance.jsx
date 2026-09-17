@@ -1,13 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import {
-  Clock, LogIn, LogOut, MapPin, AlertCircle, CheckCircle,
-  Calendar, Search, RefreshCcw, CheckCircle2, XCircle, Umbrella, Timer
-} from "lucide-react";
+import { Calendar, Search, RefreshCcw, CheckCircle2, XCircle, Umbrella, Timer } from "lucide-react";
 import ApiHit from "../Utils/ApiHit";
-import { GetMyAttendanceAPI, MarkAttendanceAPI, GetMyLeavesAPI } from "../components/Constant/Api/Api";
+import { GetMyAttendanceAPI, GetMyLeavesAPI } from "../components/Constant/Api/Api";
 import WfhRequestModal from "../components/Employee/WfhRequestModal";
 import Pagination from "../components/Pagination";
-import { Home } from "lucide-react";
 
 const PAGE_SIZE = 5;
 
@@ -52,15 +48,14 @@ const getEmployeeData = () => {
 
 const EmployeeAttendance = () => {
   const [me] = useState(getEmployeeData());
+  // Values are never read; the setters are, so the bindings keep an empty slot.
+  const [, setLocation] = useState(null);
+  const [, setLocationError] = useState("");
   const [records, setRecords] = useState([]);
   const [leaves, setLeaves] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [actionLoading, setActionLoading] = useState(false);
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const [msg, setMsg] = useState("");
-  const [location, setLocation] = useState(null);
-  const [locationError, setLocationError] = useState("");
-  const [timer, setTimer] = useState(0);
+  const [, setCurrentTime] = useState(new Date());
+  const [, setTimer] = useState(0);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [fromDate, setFromDate] = useState("");
@@ -178,12 +173,6 @@ const EmployeeAttendance = () => {
     return () => { if (tRef.current) clearInterval(tRef.current); };
   }, [today?._id, today?.checkIn, today?.checkOut]);
 
-  const formatTimer = (sec) => {
-    const h = Math.floor(sec / 3600);
-    const m = Math.floor((sec % 3600) / 60);
-    const s = sec % 60;
-    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-  };
 
   // Stats for the current month
   const stats = useMemo(() => {
@@ -237,56 +226,7 @@ const EmployeeAttendance = () => {
     [filtered, currentPage]
   );
 
-  const handleClockIn = async () => {
-    if (!location && !locationError) {
-      setMsg("⏳ Getting location…"); setTimeout(() => setMsg(""), 2000); return;
-    }
-    try {
-      setActionLoading(true);
-      const payload = {
-        employeeId: me.id,
-        action: "clock_in",
-        timestamp: new Date().toISOString(),
-        ...(location ? { location } : {})
-      };
-      const res = await ApiHit(MarkAttendanceAPI, "POST", payload);
-      if (res?.success) {
-        setMsg("✓ Clock In Successful");
-        await fetchAttendance();
-      } else {
-        setMsg(`❌ ${res?.message || 'Clock In Failed'}`);
-      }
-    } catch (e) {
-      setMsg("❌ Clock In Error");
-    } finally {
-      setActionLoading(false);
-      setTimeout(() => setMsg(""), 3000);
-    }
-  };
 
-  const handleClockOut = async () => {
-    try {
-      setActionLoading(true);
-      const payload = {
-        employeeId: me.id,
-        action: "clock_out",
-        timestamp: new Date().toISOString(),
-        ...(location ? { location } : {})
-      };
-      const res = await ApiHit(MarkAttendanceAPI, "POST", payload);
-      if (res?.success) {
-        setMsg("✓ Clock Out Successful");
-        await fetchAttendance();
-      } else {
-        setMsg(`❌ ${res?.message || 'Clock Out Failed'}`);
-      }
-    } catch (e) {
-      setMsg("❌ Clock Out Error");
-    } finally {
-      setActionLoading(false);
-      setTimeout(() => setMsg(""), 3000);
-    }
-  };
 
   return (
     <main className="p-3 sm:p-4 md:p-6 bg-gray-50 dark:bg-slate-900/40 min-h-screen">

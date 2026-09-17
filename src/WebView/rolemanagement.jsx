@@ -1,8 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  Shield, ShieldPlus, Trash2, Pencil, Search, RefreshCcw,
-  CheckCircle2, XCircle, Key, Users
-} from "lucide-react";
+import { Shield, ShieldPlus, Trash2, Pencil, Search, RefreshCcw, CheckCircle2, XCircle, Key } from "lucide-react";
 import AddRole from "../components/Roles/AddRole";
 import ApiHit from "../Utils/ApiHit";
 import { DeleteRoleAPI, GetAllRolesAPI } from "../components/Constant/Api/Api";

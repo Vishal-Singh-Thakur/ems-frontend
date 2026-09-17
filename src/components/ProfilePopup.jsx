@@ -16,7 +16,6 @@ const ProfilePopup = ({ onLogout }) => {
 
   // Role extract karo
   const userRole = user?.roleId?.name || user?.role || 'N/A';
-  const userType = user?.roleId?.roleType || user?.userType || 'N/A';
 
   // Date formatting
   const formatDate = (dateString) => {
@@ -28,7 +27,7 @@ const ProfilePopup = ({ onLogout }) => {
         month: 'long',
         day: 'numeric'
       });
-    } catch (error) {
+    } catch {
       return 'N/A';
     }
   };

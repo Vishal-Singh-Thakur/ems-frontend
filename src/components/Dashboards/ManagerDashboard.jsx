@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, RadialBarChart, RadialBar } from "recharts";
-import { Users, CalendarDays, UserCheck, Clock, ListChecks, Megaphone, ClipboardCheck } from "lucide-react";
+import { Users, CalendarDays, UserCheck, ListChecks } from "lucide-react";
 import TeamStatusToday from "../TeamStatusToday";
 import { useNavigate } from "react-router-dom";
 import { ManagerDashboardAPI } from "../Constant/Api/Api";

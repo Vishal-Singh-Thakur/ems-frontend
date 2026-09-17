@@ -43,7 +43,7 @@ const MyTasks = () => {
       const r = await ApiHit(GetMyTasksAPI);
       if (r?.success) setTasks(r.data || []);
       else setError(r?.message || 'Failed to fetch tasks');
-    } catch (e) {
+    } catch {
       setError('Failed to fetch tasks');
     } finally {
       setLoading(false);

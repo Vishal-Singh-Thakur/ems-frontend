@@ -11,6 +11,9 @@ export const LoginAPI = AuthService + "login";
 export const MeAPI = AuthService + "me";
 export const LogoutAPI = AuthService + "logout";
 export const AuthRefreshAPI = AuthService + "refresh";
+export const ForgotPasswordAPI = AuthService + "forgot-password";
+export const ResetPasswordAPI = AuthService + "reset-password";
+export const CheckResetTokenAPI = (token) => `${AuthService}reset-password/${token}`;
 
 // ============================================================================
 // USER ENDPOINTS
@@ -68,14 +71,14 @@ export const CleanupSystemLogsAPI = SystemLogService + "cleanup";
 // ============================================================================
 export const RoleService = BASE_URL + "/roles";
 export const GetAllRolesAPI = RoleService + "/get-roles";
-export const GetRoleByIdAPI = (id) => RoleService + id;
+export const GetRoleByIdAPI = (id) => `${RoleService}/${id}`;
 export const CreateRoleAPI = RoleService + "/create-role";
-export const UpdateRoleAPI = (id) => RoleService + id + "/update-role";
-export const DeleteRoleAPI = (id) => RoleService + id + "/delete-role";
+export const UpdateRoleAPI = (id) => `${RoleService}/${id}/update-role`;
+export const DeleteRoleAPI = (id) => `${RoleService}/${id}/delete-role`;
 
 // Optional: Bonus APIs (agar controller mein add kiye ho)
-export const GetRolesByTypeAPI = (roleType) => RoleService + "type/" + roleType;
-export const CheckPermissionAPI = RoleService + "check-permission";
+export const GetRolesByTypeAPI = (roleType) => `${RoleService}/type/${roleType}`;
+export const CheckPermissionAPI = RoleService + "/check-permission";
 
 // ============================================================================
 // EMPLOYEE ENDPOINTS

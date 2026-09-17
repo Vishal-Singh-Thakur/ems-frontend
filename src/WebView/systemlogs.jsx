@@ -24,7 +24,7 @@ const SystemLogs = () => {
   }, [currentPage]);
 
   // Fetch all system logs from API
-  const fetchSystemLogs = async (page = 1) => {
+  const fetchSystemLogs = async (_page = 1) => {
     try {
       setLoading(true);
       setError("");

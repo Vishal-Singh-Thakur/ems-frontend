@@ -1,20 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  Clock,
-  Calendar,
-  LogIn,
-  LogOut,
-  AlertCircle,
-  CheckCircle,
-  MapPin,
-  Home
-} from "lucide-react";
-import {
-  MarkAttendanceAPI,
-  GetMyLeavesAPI,
-  GetMyAttendanceAPI,
-  GetAttendanceOverviewAPI
-} from "../components/Constant/Api/Api";
+import { Calendar, MapPin } from "lucide-react";
+import { GetMyLeavesAPI, GetMyAttendanceAPI, GetAttendanceOverviewAPI } from "../components/Constant/Api/Api";
 import ApplyLeave from "../components/Employee/LeaveRequestModal";
 import WfhRequestModal from "../components/Employee/WfhRequestModal";
 import ApiHit from "../Utils/ApiHit";
@@ -64,17 +50,22 @@ const Attendance = ({ user }) => {
 
 
   const [currentEmployee] = useState(getEmployeeData());
+
+
+  // Values are never read; the setters are, so the bindings keep an empty slot.
+
+
+  const [, setLocation] = useState(null);
+
+
+  const [, setLocationError] = useState("");
   const [attendanceRecords, setAttendanceRecords] = useState([]);
   const [todayAttendance, setTodayAttendance] = useState(null);
   const [leaveRequests, setLeaveRequests] = useState([]);
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const [successMsg, setSuccessMsg] = useState("");
+  const [, setCurrentTime] = useState(new Date());
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [showWfhModal, setShowWfhModal] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [timer, setTimer] = useState(0);
-  const [location, setLocation] = useState(null);
-  const [locationError, setLocationError] = useState("");
 
   // Everyone's punches for today, with coordinates. The backend redacts other
   // people's locations unless the caller holds attendance.location.view, so this
@@ -259,75 +250,7 @@ const Attendance = ({ user }) => {
   };
 
   // ================= ACTIONS =================
-  const handleClockIn = async () => {
-    if (!location && !locationError) {
-      setSuccessMsg("⏳ Getting location...");
-      setTimeout(() => setSuccessMsg(""), 2000);
-      return;
-    }
 
-    try {
-      setLoading(true);
-      const payload = {
-        action: "clock_in",
-        timestamp: new Date().toISOString()
-      };
-
-      if (location) {
-        payload.location = location;
-      }
-
-      console.log("🔵 Clock In Payload:", payload);
-      const res = await ApiHit(MarkAttendanceAPI, "POST", payload);
-      console.log("🔵 Clock In Response:", res);
-
-      if (res.success) {
-        setSuccessMsg("✓ Clock In Successful");
-        await fetchAttendanceOverview();
-      } else {
-        setSuccessMsg(`❌ ${res.message || "Clock In Failed"}`);
-      }
-    } catch (err) {
-      console.error("Clock in error:", err);
-      setSuccessMsg("❌ Clock In Error");
-    } finally {
-      setLoading(false);
-      setTimeout(() => setSuccessMsg(""), 3000);
-    }
-  };
-
-  const handleClockOut = async () => {
-    try {
-      setLoading(true);
-
-      const payload = {
-        action: "clock_out",
-        timestamp: new Date().toISOString()
-      };
-
-      if (location) {
-        payload.location = location;
-      }
-
-      console.log("🔴 Clock Out Payload:", payload);
-      const res = await ApiHit(MarkAttendanceAPI, "POST", payload);
-      console.log("🔴 Clock Out Response:", res);
-
-      if (res.success) {
-        stopTimer();
-        setSuccessMsg("✓ Clock Out Successful");
-        await fetchAttendanceOverview();
-      } else {
-        setSuccessMsg(`❌ ${res.message || "Clock Out Failed"}`);
-      }
-    } catch (err) {
-      console.error("Clock out error:", err);
-      setSuccessMsg("❌ Clock Out Error");
-    } finally {
-      setLoading(false);
-      setTimeout(() => setSuccessMsg(""), 3000);
-    }
-  };
 
   // Cleanup timer on unmount
   useEffect(() => {
@@ -352,7 +275,7 @@ const Attendance = ({ user }) => {
 
   // ================= FILTERS (separate per section) =================
   const [attDate, setAttDate] = useState("");
-  const [leaveDate, setLeaveDate] = useState("");
+  const [leaveDate] = useState("");
   const [attPage, setAttPage] = useState(1);
 
   useEffect(() => { setAttPage(1); }, [attDate]);

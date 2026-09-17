@@ -1,11 +1,4 @@
-import {
-  LayoutDashboard, Users, UserCog, Building2, IdCard, Shield,
-  Clock, CalendarDays, CalendarClock,
-  ListChecks, TrendingUp, BarChart3,
-  Wallet, Briefcase, FileText, ReceiptText,
-  Megaphone, PartyPopper, Bell, Search as SearchIcon,
-  Activity, Settings, CheckSquare, ClipboardList, Network, Home, UserPlus, UserMinus
-} from "lucide-react";
+import { LayoutDashboard, Users, UserCog, Building2, IdCard, Shield, Clock, CalendarDays, CalendarClock, ListChecks, TrendingUp, BarChart3, Wallet, Briefcase, FileText, ReceiptText, Megaphone, PartyPopper, Bell, Search as SearchIcon, Activity, Settings, CheckSquare, ClipboardList, Network, UserPlus, UserMinus } from "lucide-react";
 import React from "react";
 
 // Menu items are gated by both `roles` (legacy fallback) and `permission`.

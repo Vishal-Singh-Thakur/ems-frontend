@@ -3,6 +3,9 @@ import { LoginAPI, MeAPI, LogoutAPI } from '../components/Constant/Api/Api';
 
 const AuthContext = createContext();
 
+// The provider and its hook belong in one file; splitting them would only serve
+// Fast Refresh, at the cost of a file that reads worse.
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

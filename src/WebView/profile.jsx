@@ -1,19 +1,8 @@
-import React, { useState, useEffect, useMemo } from "react";
-import {
-  User, Mail, Briefcase, Phone, Building2, Shield, Camera, Calendar,
-  Home, PhoneCall, IdCard, FileText, Upload, Trash2, Download, Eye,
-  CheckCircle2, AlertCircle, Loader2, FileImage, FileType2, File as FileIcon
-} from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { User, Mail, Briefcase, Phone, Building2, Shield, Camera, Calendar, Home, PhoneCall, IdCard, FileText, Upload, Trash2, Download, Eye, CheckCircle2, AlertCircle, Loader2, FileImage, FileType2, File as FileIcon } from "lucide-react";
 import ApiHit from "../Utils/ApiHit";
-import { DocumentFileAPI,
-  GetMyProfileAPI,
-  UpdateMyProfileAPI,
-  UploadMyDocumentAPI,
-  DeleteMyDocumentAPI,
-  BASE_URL
-} from "../components/Constant/Api/Api";
+import { DocumentFileAPI, GetMyProfileAPI, UpdateMyProfileAPI, UploadMyDocumentAPI, DeleteMyDocumentAPI } from "../components/Constant/Api/Api";
 
-const STATIC_BASE = BASE_URL.replace(/\/api\/?$/, '');
 
 const DOCUMENT_CATEGORIES = ['ID Proof', 'Address Proof', 'Educational', 'Experience', 'Other'];
 const CATEGORY_STYLE = {
@@ -58,7 +47,7 @@ const Profile = () => {
   const [editMode, setEditMode] = useState(false);
   const [tab, setTab] = useState('info'); // info | documents
   const [form, setForm] = useState({});
-  const [imageFile, setImageFile] = useState(null);
+  const [, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [errors, setErrors] = useState({});
 

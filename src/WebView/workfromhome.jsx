@@ -54,7 +54,7 @@ const WorkFromHome = ({ user }) => {
   };
 
   const [items, setItems] = useState([]);
-  const [teamIds, setTeamIds] = useState([]);
+  const [, setTeamIds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);

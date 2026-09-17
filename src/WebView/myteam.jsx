@@ -1,9 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Users, Search, Mail, IdCard, Building2, Briefcase, RefreshCcw,
-  CheckCircle2, XCircle, ClipboardList
-} from "lucide-react";
+import { Users, Search, Mail, IdCard, Building2, Briefcase, RefreshCcw, CheckCircle2, XCircle, ClipboardList } from "lucide-react";
 import ApiHit from "../Utils/ApiHit";
 import { GetMyTeamAPI } from "../components/Constant/Api/Api";
 import Pagination from "../components/Pagination";
@@ -12,7 +9,7 @@ const PAGE_SIZE = 5;
 
 const initials = (n) => (n || '?').split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase();
 
-const MyTeam = ({ user }) => {
+const MyTeam = () => {
   const navigate = useNavigate();
   const [team, setTeam] = useState([]);
   const [loading, setLoading] = useState(true);

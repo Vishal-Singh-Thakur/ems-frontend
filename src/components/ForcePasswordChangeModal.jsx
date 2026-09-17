@@ -31,12 +31,12 @@ const PasswordField = ({ name, label, value, onChange, error, show, toggle, auto
 );
 
 const forceLogout = async () => {
-  try { await fetch(LogoutAPI, { method: 'POST', credentials: 'include' }); } catch (_) {}
+  try { await fetch(LogoutAPI, { method: 'POST', credentials: 'include' }); } catch { /* best effort */ }
   try {
     localStorage.removeItem('user');
     localStorage.removeItem('token');
     sessionStorage.removeItem('_pendingPwd');
-  } catch (_) {}
+  } catch { /* best effort */ }
   window.location.replace('/login');
 };
 

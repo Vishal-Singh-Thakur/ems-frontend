@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { IoMailOutline, IoArrowBackOutline, IoCheckmarkCircleOutline } from 'react-icons/io5';
 import AppInput from './AppInput';
+import { REGEX_PATTERNS, VALIDATION_MESSAGES } from '../Utils/regex';
+import ApiHit from '../Utils/ApiHit';
+import { ForgotPasswordAPI } from './Constant/Api/Api';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -19,21 +22,30 @@ const ForgotPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Validate email
-    const emailError = validateLoginEmail(email);
-    if (emailError) {
-      setError(emailError);
+    const trimmed = email.trim();
+    if (!trimmed) {
+      setError(VALIDATION_MESSAGES.required);
+      return;
+    }
+    if (!REGEX_PATTERNS.email.test(trimmed)) {
+      setError(VALIDATION_MESSAGES.email);
       return;
     }
 
     setIsLoading(true);
-    
+
     try {
-      // Simulate API call for password reset
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      setIsEmailSent(true);
-    } catch (error) {
-      setError('Failed to send reset email. Please try again.');
+      const r = await ApiHit(ForgotPasswordAPI, 'POST', { email: trimmed });
+
+      // The server answers the same way whether or not the address belongs to an
+      // account — telling the difference here would undo that on the client.
+      if (r?.success) {
+        setIsEmailSent(true);
+      } else {
+        setError(r?.message || 'Could not send the reset email. Please try again.');
+      }
+    } catch {
+      setError('Could not reach the server. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -57,14 +69,15 @@ const ForgotPassword = () => {
           
           <div>
             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-3 sm:mb-4">
-              Check Your Email
+              Check your email
             </h2>
             <p className="text-gray-400 dark:text-slate-500 mb-6">
-              We've sent a password reset link to <br />
-              <span className="text-white font-medium">{email}</span>
+              If <span className="text-white font-medium">{email}</span> belongs to an
+              account, a reset link is on its way.
             </p>
             <p className="text-sm text-gray-500 dark:text-slate-400 mb-8">
-              Didn't receive the email? Check your spam folder or try again.
+              The link works once and expires in 30 minutes. Nothing arriving?
+              Check the spam folder, or try a different address.
             </p>
           </div>
 

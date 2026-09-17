@@ -1,16 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
 import { IoPerson, IoMail, IoBriefcase, IoApps, IoCall, IoKey, IoAlert, IoCheckmark } from "react-icons/io5";
 import AppInput from "../AppInput";
 import ApiDropdown from "../ApiDropdown";
 import ApiHit from "../../Utils/ApiHit";
-import {
-  CreateUserAPI,
-  GetAllDepartmentsAPI,
-  GetJobRolesByDepartmentAPI,
-  GetAllRolesAPI
-} from "../Constant/Api/Api";
+import { CreateUserAPI, GetAllDepartmentsAPI, GetJobRolesByDepartmentAPI, GetAllRolesAPI } from "../Constant/Api/Api";
 import { REGEX_PATTERNS, VALIDATION_MESSAGES } from "../../Utils/regex";
 
 const AddEmployee = ({ onClose, onSave }) => {

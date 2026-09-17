@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadialBarChart, RadialBar, Legend } from "recharts";
-import { CheckCircle, UserCheck, Calendar, Clock, User, ClipboardList, Megaphone } from "lucide-react";
+import { UserCheck, Calendar, Clock, ClipboardList } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { EmployeeDashboardAPI } from "../Constant/Api/Api";
 import ApiHit from "../../Utils/ApiHit";

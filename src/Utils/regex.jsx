@@ -8,7 +8,7 @@ export const REGEX_PATTERNS = {
   phone: /^[6-9]\d{9}$/,
   name: /^[a-zA-Z\s]{2,50}$/,
   employeeId: /^EMP\d{6}$/,
- title: /^[a-zA-Z0-9\s\-]{3,150}$/,
+ title: /^[a-zA-Z0-9\s-]{3,150}$/,
 };
 
 export const VALIDATION_MESSAGES = {

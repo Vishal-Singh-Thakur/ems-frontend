@@ -9,7 +9,7 @@ const LogoutButton = ({ onLogout }) => {
     try {
       setLoading(true);
       await ApiHit(LogoutAPI, "POST");
-    } catch (e) {
+    } catch {
       console.error("Logout API failed");
     } finally {
       onLogout();

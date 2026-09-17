@@ -1,14 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  FileText, Upload, Download, Trash2, Pencil, Building2, User as UserIcon,
-  Search, RefreshCcw, X, File, FileImage, FileType2, Users, Plus
-} from "lucide-react";
+import { FileText, Upload, Download, Trash2, Pencil, Building2, User as UserIcon, Search, RefreshCcw, X, File, FileImage, FileType2, Users } from "lucide-react";
 import ApiHit from "../Utils/ApiHit";
-import { DocumentFileAPI,
-  GetOrgDocumentsAPI, GetMyDocumentsAPI, GetAllPersonalDocsAPI,
-  UploadDocumentAPI, UpdateDocumentAPI, DeleteDocumentAPI,
-  PayrollEligibleEmployeesAPI, FileBaseURL
-} from "../components/Constant/Api/Api";
+import { DocumentFileAPI, GetOrgDocumentsAPI, GetMyDocumentsAPI, GetAllPersonalDocsAPI, UploadDocumentAPI, UpdateDocumentAPI, DeleteDocumentAPI, PayrollEligibleEmployeesAPI } from "../components/Constant/Api/Api";
 import Pagination from "../components/Pagination";
 
 const PAGE_SIZE = 5;
@@ -321,7 +314,7 @@ const DocList = ({ loading, docs, canManage, showOwner, emptyText, onEdit, onDel
 };
 
 /* ---------- Upload / Edit modal ---------- */
-const DocumentModal = ({ mode, data, defaultCategory, canManage, employees, onClose, onSuccess }) => {
+const DocumentModal = ({ mode, data, defaultCategory, employees, onClose, onSuccess }) => {
   const isEdit = mode === 'edit';
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');

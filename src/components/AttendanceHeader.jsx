@@ -63,7 +63,7 @@ const AttendanceHeader = () => {
     try {
       const r = await ApiHit(GetMyAttendanceAPI, "GET");
       if (r?.success) setRecords(r.data || []);
-    } catch (_) {}
+    } catch { /* best effort */ }
   };
 
   useEffect(() => { fetchAttendance(); }, []);
@@ -156,7 +156,7 @@ const AttendanceHeader = () => {
       } else {
         setMsg(`❌ ${res?.message || 'Clock In Failed'}`);
       }
-    } catch (e) {
+    } catch {
       setMsg("❌ Clock In Error");
     } finally {
       setActionLoading(false);
@@ -179,7 +179,7 @@ const AttendanceHeader = () => {
       } else {
         setMsg(`❌ ${res?.message || 'Clock Out Failed'}`);
       }
-    } catch (e) {
+    } catch {
       setMsg("❌ Clock Out Error");
     } finally {
       setActionLoading(false);

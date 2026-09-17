@@ -1,15 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  Briefcase, Plus, Search, ArrowRightLeft, Undo2, Wrench, Archive,
-  History, Loader2, X, Check, User as UserIcon, Package
-} from "lucide-react";
+import { Briefcase, Plus, Search, ArrowRightLeft, Undo2, Wrench, Archive, History, Loader2, X, Check, User as UserIcon, Package } from "lucide-react";
 import ApiHit from "../Utils/ApiHit";
-import {
-  AssetListAPI, AssetMyAPI, AssetMetaAPI, AssetSummaryAPI, AssetCreateAPI,
-  AssetByIdAPI, AssetAssignAPI, AssetReturnAPI, AssetTransferAPI,
-  AssetStatusAPI, AssetHistoryAPI, GetAllUsersAPI
-} from "../components/Constant/Api/Api";
+import { AssetListAPI, AssetMyAPI, AssetMetaAPI, AssetSummaryAPI, AssetCreateAPI, AssetAssignAPI, AssetReturnAPI, AssetTransferAPI, AssetStatusAPI, AssetHistoryAPI, GetAllUsersAPI } from "../components/Constant/Api/Api";
 import { hasPermission } from "../Utils/roleUtils";
+import { notifyError, notifyResult, notifyOk } from "../Utils/notify";
 
 const STATUS_STYLE = {
   "In Stock": "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-300 dark:border-emerald-500/30",
@@ -72,7 +66,12 @@ const AddAssetForm = ({ meta, onDone, onCancel }) => {
       usefulLifeMonths: form.usefulLifeMonths === "" ? undefined : Number(form.usefulLifeMonths)
     });
     setBusy(false);
-    if (r?.success) onDone(); else setError(r?.message || "Could not add the asset.");
+    if (r?.success) {
+      notifyOk(`${form.assetTag.toUpperCase()} added to the registry`);
+      onDone();
+    } else {
+      setError(r?.message || "Could not add the asset.");
+    }
   };
 
   const field = "mt-1 w-full border border-gray-200 dark:border-slate-700 rounded-lg px-2.5 py-2 text-sm bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-violet-500";
@@ -151,7 +150,12 @@ const HolderDialog = ({ asset, mode, people, onDone, onCancel }) => {
     const url = mode === "assign" ? AssetAssignAPI(asset._id) : AssetTransferAPI(asset._id);
     const r = await ApiHit(url, "POST", { employeeId, note });
     setBusy(false);
-    if (r?.success) onDone(); else setError(r?.message || "That did not work.");
+    if (r?.success) {
+      notifyOk(r.message);
+      onDone();
+    } else {
+      setError(r?.message || "That did not work.");
+    }
   };
 
   return (
@@ -213,7 +217,12 @@ const ReturnDialog = ({ asset, conditions, onDone, onCancel }) => {
     setBusy(true);
     const r = await ApiHit(AssetReturnAPI(asset._id), "POST", { condition, note });
     setBusy(false);
-    if (r?.success) onDone(); else window.alert(r?.message || "That did not work.");
+    if (r?.success) {
+      notifyOk(r.message);
+      onDone();
+    } else {
+      notifyError(r?.message);
+    }
   };
 
   return (
@@ -368,7 +377,9 @@ const Assets = ({ user }) => {
   const act = async (url, body, confirmText) => {
     if (confirmText && !window.confirm(confirmText)) return;
     const r = await ApiHit(url, "PATCH", body || {});
-    if (!r?.success) window.alert(r?.message || "That action failed.");
+    // The server's own wording, on success as well as failure — so "Expense
+    // claim approved" and "2 assets not yet returned" read the same way.
+    notifyResult(r, r?.message);
     load();
   };
 

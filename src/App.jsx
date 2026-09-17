@@ -22,8 +22,8 @@ import EmployeeTimeOff from "./WebView/employeetimeoff";
 import Login from "./components/Login/Login";
 import RoleManagement from "./WebView/rolemanagement";
 import ForgotPassword from "./components/ForgotPassword";
+import ResetPassword from "./components/ResetPassword";
 import Unauthorized from "./WebView/unauthorized";
-import ComingSoon from "./WebView/comingsoon";
 import OrgTreePage from "./WebView/orgtree";
 import Announcements from "./WebView/announcements";
 import Notifications from "./WebView/notifications";
@@ -43,9 +43,9 @@ import Offboarding from "./WebView/offboarding";
 import Expenses from "./WebView/expenses";
 import Assets from "./WebView/assets";
 import AssistantWidget from "./components/AssistantWidget";
+import Toasts from "./components/Toasts";
 import { MeAPI, LogoutAPI } from "./components/Constant/Api/Api";
 import { applyTheme } from "./Utils/theme";
-import { IdCard, Building2, CalendarClock, TrendingUp, Wallet, Briefcase, FileText, Megaphone, PartyPopper, Bell } from "lucide-react";
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -103,7 +103,7 @@ function App() {
           return;
         }
       }
-    } catch (e) { /* fall through */ }
+    } catch { /* fall through */ }
     // Fallback: use login response
     localStorage.setItem('user', JSON.stringify(userData));
     setUser(userData);
@@ -170,7 +170,7 @@ function App() {
                 const data = await res.json();
                 if (data.success && data.data) setUser(data.data);
               }
-            } catch (_) {}
+            } catch { /* best effort */ }
           }}
         />
       )}
@@ -201,6 +201,7 @@ function App() {
           {/* ✅ Login Route with onLogin prop */}
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
           <Route
@@ -494,6 +495,10 @@ function App() {
       {isAuthenticated && !user?.mustChangePassword && (
         <AssistantWidget user={user} />
       )}
+
+      {/* Mounted once, outside the authenticated branch — a failed login needs
+          to be able to say so as much as anything else does. */}
+      <Toasts />
     </div>
   );
 }

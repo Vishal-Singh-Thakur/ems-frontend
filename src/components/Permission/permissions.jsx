@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 const PermissionsManager = ({ selectedPermissions = [], onChange, disabled = false }) => {
   // Modules & actions — must match ems-backend/general-service/constants/permissions.js keys.
@@ -34,15 +34,6 @@ const PermissionsManager = ({ selectedPermissions = [], onChange, disabled = fal
     { name: "Profile",         key: "profile",       permissions: ["view"] }
   ];
 
-  const PERMISSION_LABELS = {
-    view:     "View",
-    manage:   "Manage",
-    delete:   "Delete",
-    apply:    "Apply",
-    approve:  "Approve",
-    mark:     "Mark",
-    password: "Reset Password"
-  };
 
   // Check if a specific permission is selected
   const isPermissionSelected = (moduleKey, permission) => {
