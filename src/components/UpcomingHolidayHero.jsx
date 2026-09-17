@@ -195,11 +195,11 @@ const UpcomingHolidayHero = ({ windowDays = 90 }) => {
   const days = daysUntil(holiday.date);
 
   return (
-    <div className={`relative rounded-2xl overflow-hidden bg-gradient-to-br ${theme.gradient} text-white shadow-lg`}>
+    <div className={`relative h-full rounded-2xl overflow-hidden bg-gradient-to-br ${theme.gradient} text-white shadow-lg`}>
       {/* Decorative background */}
       <Decoration kind={theme.decoration} accents={theme.accents} />
 
-      <div className="relative z-10 p-4 sm:p-5">
+      <div className="relative z-10 h-full flex flex-col p-4 sm:p-5">
         {/* Header */}
         <div className="flex items-center justify-between mb-3 sm:mb-4">
           <div className="flex items-center gap-2 text-xs sm:text-sm font-medium">
@@ -230,7 +230,7 @@ const UpcomingHolidayHero = ({ windowDays = 90 }) => {
 
         {/* Dots indicator — click to browse */}
         {upcoming.length > 1 && upcoming.length <= 8 && (
-          <div className="flex items-center justify-center gap-1 mt-3">
+          <div className="mt-auto pt-4 flex items-center justify-center gap-1">
             {upcoming.map((_, i) => (
               <button
                 key={i}

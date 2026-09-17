@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { LineChart, Line, PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, RadialBarChart, RadialBar } from "recharts";
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, RadialBarChart, RadialBar } from "recharts";
 import { Users, CalendarDays, UserCheck, UserPlus, Clock, Megaphone, Briefcase } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { HrDashboardAPI } from "../Constant/Api/Api";
 import ApiHit from "../../Utils/ApiHit";
+import EmployeeGrowthChart from "./EmployeeGrowthChart";
 import DashboardAnnouncements from "../DashboardAnnouncements";
 import UpcomingHolidayHero from "../UpcomingHolidayHero";
 import AttendanceHeader from "../AttendanceHeader";
@@ -44,7 +45,6 @@ const HRDashboard = () => {
 
     const employeeGrowth = d?.employeeGrowth || [];
     const departmentData = (d?.departmentDistribution || []).map((x, i) => ({ name: x.department, value: x.count, color: DEPT_COLORS[i % DEPT_COLORS.length] }));
-    const events = d?.upcomingEvents || [];
     const recentLeaves = d?.recentLeaves || [];
     const teamStatusToday = d?.teamStatusToday || [];
     const statusCounts = d?.statusCounts || { present: 0, absent: 0, wfh: 0, onLeave: 0, late: 0, notMarked: 0 };
@@ -83,22 +83,17 @@ const HRDashboard = () => {
                         <h4 className="font-semibold text-gray-800 dark:text-slate-100">Employee Overview</h4>
                         <span className="text-xs text-gray-400 dark:text-slate-500">Current Year</span>
                     </div>
-                    <ResponsiveContainer width="100%" height={230}>
-                        <LineChart data={employeeGrowth}>
-                            <Line type="monotone" dataKey="employees" stroke="#6366f1" strokeWidth={3} dot={{ fill: '#6366f1', r: 4 }} />
-                            <Tooltip />
-                        </LineChart>
-                    </ResponsiveContainer>
+                    <EmployeeGrowthChart data={employeeGrowth} />
                 </div>
 
                 <div className="bg-white dark:bg-slate-800 rounded-2xl p-3 sm:p-4 md:p-5 shadow border border-gray-100 dark:border-slate-800">
                     <h4 className="font-semibold text-gray-800 dark:text-slate-100 mb-4">Department Wise</h4>
                     {departmentData.length === 0 ? (
-                        <div className="h-[230px] flex items-center justify-center text-gray-400 dark:text-slate-500 text-xs">No data</div>
+                        <div className="h-[180px] flex items-center justify-center text-gray-400 dark:text-slate-500 text-xs">No data</div>
                     ) : (
-                        <ResponsiveContainer width="100%" height={230}>
+                        <ResponsiveContainer width="100%" height={180}>
                             <PieChart>
-                                <Pie data={departmentData} dataKey="value" nameKey="name" outerRadius={70} innerRadius={40} label>
+                                <Pie data={departmentData} dataKey="value" nameKey="name" outerRadius={56} innerRadius={32} label>
                                     {departmentData.map((e, i) => <Cell key={i} fill={e.color} />)}
                                 </Pie>
                                 <Tooltip />

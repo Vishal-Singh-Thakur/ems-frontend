@@ -42,7 +42,6 @@ const EmployeeDashboard = ({ user }) => {
 
     const weeklyAttendance = d?.weeklyAttendance || [];
     const recentTasks = d?.recentTasks || [];
-    const events = d?.upcomingEvents || [];
 
     const attendancePct = s.attendancePercentage ?? 0;
     const attendanceRadial = [{ name: 'Attendance', value: attendancePct, fill: '#10b981' }];
