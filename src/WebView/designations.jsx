@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { IdCard, Plus, Pencil, Trash2, X, Building2 } from "lucide-react";
 import ApiHit from "../Utils/ApiHit";
+import { confirm } from '../Utils/confirm';
+import { notifyError, notifyWarn } from '../Utils/notify';
 import {
   GetAllJobRolesAPI,
   CreateJobRoleAPI,
@@ -71,24 +73,24 @@ const Designations = ({ user }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.departmentId) { alert('Please select a department'); return; }
+    if (!form.departmentId) { notifyWarn('Please select a department'); return; }
     setSubmitting(true);
     try {
       const url = editingId ? UpdateJobRoleAPI(editingId) : CreateJobRoleAPI;
       const method = editingId ? 'PUT' : 'POST';
       const r = await ApiHit(url, method, form);
       if (r?.success) { closeModal(); fetchAll(); }
-      else alert(r?.message || 'Failed');
+      else notifyError(r?.message || 'Failed');
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleDelete = async (j) => {
-    if (!window.confirm(`Delete "${j.name}"?`)) return;
+    if (!(await confirm(`Delete "${j.name}"?`))) return;
     const r = await ApiHit(DeleteJobRoleAPI(j._id), 'DELETE');
     if (r?.success) fetchAll();
-    else alert(r?.message || 'Failed');
+    else notifyError(r?.message || 'Failed');
   };
 
   return (
@@ -182,7 +184,7 @@ const Designations = ({ user }) => {
               <h3 className="font-semibold text-gray-800 dark:text-slate-100 flex items-center gap-2">
                 <IdCard size={18} className="text-blue-600 dark:text-blue-400" /> {editingId ? 'Edit Designation' : 'Add Designation'}
               </h3>
-              <button onClick={closeModal} className="p-1 hover:bg-gray-100 dark:hover:bg-slate-700 rounded"><X size={18} /></button>
+              <button aria-label="Close" onClick={closeModal} className="p-1 hover:bg-gray-100 dark:hover:bg-slate-700 rounded"><X size={18} /></button>
             </div>
             <form onSubmit={handleSubmit} className="p-5 space-y-4">
               <div>

@@ -3,6 +3,8 @@ import { FileText, Upload, Download, Trash2, Pencil, Building2, User as UserIcon
 import ApiHit from "../Utils/ApiHit";
 import { DocumentFileAPI, GetOrgDocumentsAPI, GetMyDocumentsAPI, GetAllPersonalDocsAPI, UploadDocumentAPI, UpdateDocumentAPI, DeleteDocumentAPI, PayrollEligibleEmployeesAPI } from "../components/Constant/Api/Api";
 import Pagination from "../components/Pagination";
+import { confirm } from '../Utils/confirm';
+import { notifyError } from '../Utils/notify';
 
 const PAGE_SIZE = 5;
 
@@ -100,10 +102,10 @@ const Documents = ({ user }) => {
   const closeModal = () => setModal({ open: false, mode: 'create', data: null, category: 'org' });
 
   const handleDelete = async (d) => {
-    if (!window.confirm(`Delete "${d.name}"?`)) return;
+    if (!(await confirm(`Delete "${d.name}"?`))) return;
     const r = await ApiHit(DeleteDocumentAPI(d._id), "DELETE");
     if (r?.success) fetchAll();
-    else alert(r?.message || 'Delete failed');
+    else notifyError(r?.message || 'Delete failed');
   };
 
   const currentList = tab === 'org' ? orgDocs : tab === 'my' ? myDocs : allPersonal;
@@ -370,7 +372,7 @@ const DocumentModal = ({ mode, data, defaultCategory, employees, onClose, onSucc
             {isEdit ? <Pencil size={18} /> : <Upload size={18} />}
             {isEdit ? 'Edit Document' : 'Upload Document'}
           </h3>
-          <button onClick={onClose} className="p-1 hover:bg-white/20 dark:hover:bg-slate-900/20 rounded"><X size={18} /></button>
+          <button aria-label="Close" onClick={onClose} className="p-1 hover:bg-white/20 dark:hover:bg-slate-900/20 rounded"><X size={18} /></button>
         </div>
 
         <form onSubmit={submit} className="p-4 sm:p-5 space-y-4 overflow-y-auto flex-1">

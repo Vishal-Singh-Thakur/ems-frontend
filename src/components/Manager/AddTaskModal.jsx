@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import ApiHit from "../../Utils/ApiHit";
 import { CreateTaskAPI, UpdateTaskAPI, UpdateTaskStatusAPI, GetMyTeamAPI } from "../Constant/Api/Api";
 import { REGEX_PATTERNS, VALIDATION_MESSAGES } from "../../Utils/regex";
+import { notifyError } from '../../Utils/notify';
 import {
   IoDocumentText,
   IoPerson,
@@ -157,11 +158,11 @@ const AddTaskModal = ({ open, setOpen, onSuccess, task, isEmployeeMode = false }
         setOpen(false);
         onSuccess && onSuccess();
       } else {
-        alert(response?.message || "Something went wrong");
+        notifyError(response?.message || "Something went wrong");
       }
     } catch (err) {
       console.error("Submit Error:", err);
-      alert("Error saving task");
+      notifyError("Error saving task");
     } finally {
       setLoading(false);
     }

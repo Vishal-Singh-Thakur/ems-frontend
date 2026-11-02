@@ -8,6 +8,8 @@ import {
   GetMyTeamAPI
 } from "../components/Constant/Api/Api";
 import Pagination from "../components/Pagination";
+import { confirm } from '../Utils/confirm';
+import { notifyError } from '../Utils/notify';
 
 const PAGE_SIZE = 5;
 
@@ -95,12 +97,12 @@ const LeaveManagement = ({ user }) => {
   }, []);
 
   const handleApprove = async (id) => {
-    if (!window.confirm("Approve this leave?")) return;
+    if (!(await confirm("Approve this leave?"))) return;
     setBusyId(id);
     try {
       const res = await ApiHit(ApproveLeaveAPI(id), "PATCH");
       if (res?.success) fetchAll();
-      else alert(res?.message || "Failed to approve");
+      else notifyError(res?.message || "Failed to approve");
     } finally {
       setBusyId(null);
     }
@@ -113,7 +115,7 @@ const LeaveManagement = ({ user }) => {
     try {
       const res = await ApiHit(RejectLeaveAPI(id), "PATCH", { rejectionReason: reason });
       if (res?.success) fetchAll();
-      else alert(res?.message || "Failed to reject");
+      else notifyError(res?.message || "Failed to reject");
     } finally {
       setBusyId(null);
     }

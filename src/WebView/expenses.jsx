@@ -10,7 +10,8 @@ import {
   ExpenseCancelAPI, ExpenseByIdAPI
 } from "../components/Constant/Api/Api";
 import { hasPermission } from "../Utils/roleUtils";
-import { notifyError, notifyResult, notifyOk } from "../Utils/notify";
+import { notifyError, notifyOk, notifyResult } from '../Utils/notify';
+import { confirm } from '../Utils/confirm';
 
 const STATUS_STYLES = {
   Pending:   "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-300 dark:border-amber-500/30",
@@ -319,7 +320,7 @@ const Expenses = ({ user }) => {
   useEffect(() => { load(); }, [load]);
 
   const act = async (url, body, confirmText) => {
-    if (confirmText && !window.confirm(confirmText)) return;
+    if (confirmText && !(await confirm(confirmText))) return;
     const r = await ApiHit(url, "PATCH", body || {});
     // The server's own wording, on success as well as failure — so "Expense
     // claim approved" and "2 assets not yet returned" read the same way.

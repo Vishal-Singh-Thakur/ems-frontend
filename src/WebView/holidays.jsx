@@ -8,6 +8,8 @@ import {
   DeleteHolidayAPI
 } from "../components/Constant/Api/Api";
 import INDIAN_HOLIDAYS from "../Data/indianHolidays";
+import { confirm } from '../Utils/confirm';
+import { notifyError } from '../Utils/notify';
 
 const TYPES = ['Public', 'Company', 'Festival', 'Optional', 'Other'];
 
@@ -87,10 +89,10 @@ const Holidays = ({ user }) => {
   };
 
   const handleDelete = async (id, name) => {
-    if (!window.confirm(`Delete "${name}"?`)) return;
+    if (!(await confirm(`Delete "${name}"?`))) return;
     const r = await ApiHit(DeleteHolidayAPI(id), "DELETE");
     if (r?.success) fetchAll();
-    else alert(r?.message || 'Failed');
+    else notifyError(r?.message || 'Failed');
   };
 
   // Merge DB holidays with system-provided Indian holidays.
@@ -242,7 +244,7 @@ const Holidays = ({ user }) => {
               <h3 className="font-semibold text-gray-800 dark:text-slate-100 flex items-center gap-2">
                 <PartyPopper size={18} className="text-pink-600 dark:text-pink-400" /> {editingId ? 'Edit Holiday' : 'Add Holiday'}
               </h3>
-              <button onClick={closeModal} className="p-1 hover:bg-gray-100 dark:hover:bg-slate-700 rounded"><X size={18} /></button>
+              <button aria-label="Close" onClick={closeModal} className="p-1 hover:bg-gray-100 dark:hover:bg-slate-700 rounded"><X size={18} /></button>
             </div>
             <form onSubmit={handleSubmit} className="p-5 space-y-4">
               {errors.length > 0 && (

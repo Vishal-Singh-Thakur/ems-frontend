@@ -5,6 +5,8 @@ import ApiHit from "../Utils/ApiHit";
 import { DeleteRoleAPI, GetAllRolesAPI } from "../components/Constant/Api/Api";
 import { hasPermission } from "../Utils/roleUtils";
 import Pagination from "../components/Pagination";
+import { confirm } from '../Utils/confirm';
+import { notifyError } from '../Utils/notify';
 
 const PAGE_SIZE = 5;
 
@@ -122,12 +124,12 @@ const RoleManagement = ({ user }) => {
   useEffect(() => { fetchRoles(); }, []);
 
   const handleDelete = async (id, name) => {
-    if (!window.confirm(`Delete "${name}" role?`)) return;
+    if (!(await confirm(`Delete "${name}" role?`))) return;
     setBusyId(id);
     try {
       const r = await ApiHit(DeleteRoleAPI(id), "DELETE");
       if (r?.success) fetchRoles();
-      else alert(r?.message || 'Failed to delete');
+      else notifyError(r?.message || 'Failed to delete');
     } finally {
       setBusyId(null);
     }

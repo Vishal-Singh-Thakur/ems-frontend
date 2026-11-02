@@ -16,7 +16,7 @@ const MENU_SECTIONS = [
       { icon: <UserCog size={18} />,         label: 'User Management',  path: '/user-management',  permission: 'users.view',            roles: ['superadmin', 'admin', 'hr'] },
       { icon: <Building2 size={18} />,       label: 'Departments',      path: '/departments',      permission: 'departments.view',      roles: ['superadmin', 'admin', 'hr'] },
       { icon: <IdCard size={18} />,          label: 'Designations',     path: '/designations',     permission: 'designations.view',     roles: ['superadmin', 'admin', 'hr'] },
-      { icon: <Shield size={18} />,          label: 'Roles & Permissions', path: '/role-management', permission: 'roles.view',         roles: ['superadmin', 'admin'] },
+      { icon: <Shield size={18} />,          label: 'Roles & Permissions', path: '/role-management', permission: 'roles.view',         roles: ['superadmin', 'admin', 'hr'] },
       { icon: <Network size={18} />,         label: 'Organization Tree', path: '/org-tree',        permission: 'orgtree.view',          roles: ALL }
     ]
   },
@@ -54,7 +54,7 @@ const MENU_SECTIONS = [
       { icon: <Users size={18} />,           label: 'Team Hierarchy',   path: '/team-management',  permission: 'team.manage',           roles: ['superadmin', 'hr'] },
       { icon: <UserPlus size={18} />,        label: 'My Onboarding',    path: '/onboarding',       permission: 'checklist.my',          roles: ['employee'], roleFallback: true },
       { icon: <Users size={18} />,           label: 'My Team',          path: '/my-team',          permission: 'myteam.view',           roles: ['manager'], roleFallback: true },
-      { icon: <CheckSquare size={18} />,     label: 'Approvals',        path: '/approvals',        permission: 'approvals.view',        roles: ['superadmin', 'admin', 'manager'] }
+      { icon: <CheckSquare size={18} />,     label: 'Approvals',        path: '/approvals',        permission: 'approvals.view',        roles: ['superadmin', 'admin', 'hr', 'manager'] }
     ]
   },
   {
@@ -70,7 +70,7 @@ const MENU_SECTIONS = [
   {
     title: 'EMPLOYEE SELF-SERVICE',
     items: [
-      { icon: <ClipboardList size={18} />,   label: 'My Tasks',         path: '/my-tasks',         permission: 'mytasks.view',          roles: ['employee'] },
+      { icon: <ClipboardList size={18} />,   label: 'My Tasks',         path: '/my-tasks',         permission: 'mytasks.view',          roles: ALL },
       { icon: <CalendarDays size={18} />,    label: 'Time Off',         path: '/time-off',         permission: 'timeoff.view',          roles: ['employee'] },
       { icon: <Clock size={18} />,           label: 'My Attendance',    path: '/my-attendance',    permission: 'myattendance.view',     roles: ['employee'] },
       { icon: <Wallet size={18} />,          label: 'My Payslips',      path: '/my-payslips',      permission: 'mypayslips.view',       roles: ALL, roleFallback: true },

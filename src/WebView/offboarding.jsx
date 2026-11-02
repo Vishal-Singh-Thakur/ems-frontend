@@ -11,6 +11,8 @@ import { DocumentFileAPI,
 } from "../components/Constant/Api/Api";
 import { GetAllUsersAPI } from "../components/Constant/Api/Api";
 import { hasPermission } from "../Utils/roleUtils";
+import { confirm } from '../Utils/confirm';
+import { notifyError } from '../Utils/notify';
 
 const ROLE_LABEL = { hr: "HR", admin: "IT / Admin", manager: "Manager", employee: "Employee" };
 const ROLE_PILL = {
@@ -139,7 +141,7 @@ const AssetList = ({ run, onAdd, onToggle, onDelete, canManage, canToggle, busy 
             className="flex-1 border border-gray-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 text-xs bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500" />
           <input value={identifier} onChange={(e) => setIdentifier(e.target.value)} placeholder="Serial (optional)"
             className="w-32 border border-gray-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 text-xs bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100 outline-none focus:ring-2 focus:ring-blue-500" />
-          <button type="submit" className="px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white"><Plus size={14} /></button>
+          <button type="submit" aria-label="Add item" className="px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white"><Plus size={14} /></button>
         </form>
       )}
     </div>
@@ -175,7 +177,7 @@ const InitiateModal = ({ onClose, onDone }) => {
     try {
       const r = await ApiHit(OffboardingInitiateAPI, "POST", { ...form, lastWorkingDay: lastDay.toISOString() });
       if (r?.success) { onDone(); onClose(); }
-      else alert(r?.message || "Failed");
+      else notifyError(r?.message || "Failed");
     } finally { setSaving(false); }
   };
 
@@ -184,7 +186,7 @@ const InitiateModal = ({ onClose, onDone }) => {
       <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-slate-700">
           <h2 className="font-semibold text-gray-800 dark:text-slate-100">Start offboarding</h2>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-500"><X size={18} /></button>
+          <button aria-label="Close" onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-500"><X size={18} /></button>
         </div>
 
         <div className="p-5 space-y-3">
@@ -274,7 +276,7 @@ const Offboarding = ({ user }) => {
       const mine = await ApiHit(OffboardingMyStepsAPI, "GET");
       if (mine?.success) setMySteps(mine.data || []);
     } else {
-      alert(r?.message || "Action failed");
+      notifyError(r?.message || "Action failed");
     }
     return r;
   };
@@ -286,7 +288,7 @@ const Offboarding = ({ user }) => {
   };
 
   const issueLetter = async (id, name) => {
-    if (!window.confirm(`Issue the experience letter for ${name}?`)) return;
+    if (!(await confirm(`Issue the experience letter for ${name}?`))) return;
     setBusyId(id);
     try { await act(() => ApiHit(OffboardingLetterAPI(id), "POST", {})); }
     finally { setBusyId(null); }
@@ -451,9 +453,9 @@ const Offboarding = ({ user }) => {
                           {canManage && ["Notice Period", "Clearance"].includes(o.status) && (
                             <button
                               onClick={async () => {
-                                if (!window.confirm(`Cancel offboarding for ${o.employee?.name}? (resignation withdrawn)`)) return;
+                                if (!(await confirm(`Cancel offboarding for ${o.employee?.name}? (resignation withdrawn)`))) return;
                                 const r = await ApiHit(OffboardingCancelAPI(o._id), "PATCH");
-                                if (r?.success) load(); else alert(r?.message || "Cancel failed");
+                                if (r?.success) load(); else notifyError(r?.message || "Cancel failed");
                               }}
                               className="text-[11px] text-red-600 dark:text-red-400 hover:underline">
                               Cancel offboarding

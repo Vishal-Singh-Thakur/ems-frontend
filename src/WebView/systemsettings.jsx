@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
+import { Settings } from "lucide-react";
 import ApiHit from "../Utils/ApiHit";
 import { GetSystemSettingsAPI, UpdateSystemSettingsAPI } from "../components/Constant/Api/Api";
 import { applyTheme } from "../Utils/theme";
+import { notifyError, notifyOk } from '../Utils/notify';
 
 const SystemSettings = () => {
   const [settings, setSettings] = useState({
@@ -70,15 +72,15 @@ const SystemSettings = () => {
 
       if (response.success) {
         applyTheme(settings.theme);
-        alert("System Settings Saved Successfully!");
+        notifyOk("System Settings Saved Successfully!");
       } else {
         setError(response.message || "Failed to save settings");
-        alert("Failed to save settings. Please try again.");
+        notifyError("Failed to save settings. Please try again.");
       }
     } catch (err) {
       console.error("Error saving settings:", err);
       setError("Network error while saving settings");
-      alert("Network error. Please try again.");
+      notifyError("Network error. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -99,8 +101,13 @@ const SystemSettings = () => {
 
   return (
     <div className="p-3 sm:p-5 md:p-8 lg:p-10">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold">System Settings</h1>
+      <div className="mb-6 flex items-start justify-between gap-3 sm:gap-4 flex-wrap">
+        <div>
+          <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 dark:text-slate-100 flex items-center gap-2">
+            <Settings className="text-blue-600 dark:text-blue-400" /> System Settings
+          </h1>
+          <p className="text-sm text-gray-500 dark:text-slate-400">Appearance and organisation-wide defaults.</p>
+        </div>
       </div>
 
       {/* Error Message */}

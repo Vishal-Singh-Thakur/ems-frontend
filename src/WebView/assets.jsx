@@ -3,7 +3,8 @@ import { Briefcase, Plus, Search, ArrowRightLeft, Undo2, Wrench, Archive, Histor
 import ApiHit from "../Utils/ApiHit";
 import { AssetListAPI, AssetMyAPI, AssetMetaAPI, AssetSummaryAPI, AssetCreateAPI, AssetAssignAPI, AssetReturnAPI, AssetTransferAPI, AssetStatusAPI, AssetHistoryAPI, GetAllUsersAPI } from "../components/Constant/Api/Api";
 import { hasPermission } from "../Utils/roleUtils";
-import { notifyError, notifyResult, notifyOk } from "../Utils/notify";
+import { notifyError, notifyOk, notifyResult } from '../Utils/notify';
+import { confirm } from '../Utils/confirm';
 
 const STATUS_STYLE = {
   "In Stock": "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-300 dark:border-emerald-500/30",
@@ -288,7 +289,7 @@ const HistoryPanel = ({ asset, onClose }) => {
             <h3 className="font-semibold text-gray-800 dark:text-slate-100 text-sm">{asset.assetTag}</h3>
             <p className="text-[11px] text-gray-500 dark:text-slate-400">{asset.name} · full history</p>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400">
+          <button aria-label="Close" onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400">
             <X size={16} />
           </button>
         </div>
@@ -375,7 +376,7 @@ const Assets = ({ user }) => {
   }, [canManage]);
 
   const act = async (url, body, confirmText) => {
-    if (confirmText && !window.confirm(confirmText)) return;
+    if (confirmText && !(await confirm(confirmText))) return;
     const r = await ApiHit(url, "PATCH", body || {});
     // The server's own wording, on success as well as failure — so "Expense
     // claim approved" and "2 assets not yet returned" read the same way.

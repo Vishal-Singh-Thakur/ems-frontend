@@ -9,6 +9,7 @@ import {
   ListAssignmentsAPI, CreateAssignmentAPI, DeleteAssignmentAPI, AssignableUsersAPI
 } from "../components/Constant/Api/Api";
 import Pagination from "../components/Pagination";
+import { confirm } from '../Utils/confirm';
 
 const PAGE_SIZE = 5;
 
@@ -90,7 +91,7 @@ const ShiftManagement = ({ user }) => {
   };
 
   const deleteShift = async (s) => {
-    if (!window.confirm(`Delete shift "${s.name}"? All assignments using it will also be removed.`)) return;
+    if (!(await confirm(`Delete shift "${s.name}"? All assignments using it will also be removed.`))) return;
     const r = await ApiHit(DeleteShiftAPI(s._id), 'DELETE');
     if (r?.success) { setMsg({ type: 'success', text: 'Shift deleted' }); fetchAll(); }
     else setMsg({ type: 'error', text: r?.message || 'Failed' });
@@ -115,7 +116,7 @@ const ShiftManagement = ({ user }) => {
   };
 
   const deleteAssignment = async (a) => {
-    if (!window.confirm(`Remove ${a.user?.name}'s "${a.shift?.name}" shift?`)) return;
+    if (!(await confirm(`Remove ${a.user?.name}'s "${a.shift?.name}" shift?`))) return;
     const r = await ApiHit(DeleteAssignmentAPI(a._id), 'DELETE');
     if (r?.success) { setMsg({ type: 'success', text: 'Assignment removed' }); fetchAll(); }
     else setMsg({ type: 'error', text: r?.message || 'Failed' });

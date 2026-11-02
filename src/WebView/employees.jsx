@@ -6,6 +6,8 @@ import {
 import ApiHit from "../Utils/ApiHit";
 import { GetAllEmployeesAPI, DeleteEmployeeAPI } from "../components/Constant/Api/Api";
 import Pagination from "../components/Pagination";
+import { confirm } from '../Utils/confirm';
+import { notifyError } from '../Utils/notify';
 
 const PAGE_SIZE = 5;
 
@@ -50,12 +52,12 @@ const Employees = () => {
   useEffect(() => { fetchEmployees(); }, []);
 
   const handleDelete = async (id, name) => {
-    if (!window.confirm(`Delete employee "${name}"?`)) return;
+    if (!(await confirm(`Delete employee "${name}"?`))) return;
     setBusyId(id);
     try {
       const res = await ApiHit(DeleteEmployeeAPI(id), "DELETE");
       if (res?.success) fetchEmployees();
-      else alert(res?.message || "Failed to delete");
+      else notifyError(res?.message || "Failed to delete");
     } finally {
       setBusyId(null);
     }

@@ -197,7 +197,7 @@
 //               <button
 //                 type="button"
 //                 className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
-//                 onClick={() => alert('Contact your administrator')}
+//                 onClick={() => notifyWarn('Contact your administrator')}
 //               >
 //                 Forgot password?
 //               </button>
@@ -246,7 +246,7 @@
 //               <button
 //                 type="button"
 //                 className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold"
-//                 onClick={() => alert('Contact your administrator')}
+//                 onClick={() => notifyWarn('Contact your administrator')}
 //               >
 //                 Contact Administrator
 //               </button>
@@ -277,6 +277,7 @@ import { LoginAPI } from '../Constant/Api/Api';
 import AppInput from '../AppInput';
 import { REGEX_PATTERNS, VALIDATION_MESSAGES } from '../../Utils/regex';
 import { Link } from 'react-router-dom';
+import { notifyWarn } from '../../Utils/notify';
 
 
 const Login = ({ onLogin }) => {  // ✅ onLogin prop receive karein
@@ -471,7 +472,7 @@ const Login = ({ onLogin }) => {  // ✅ onLogin prop receive karein
               <button
                 type="button"
                 className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold"
-                onClick={() => alert('Contact your administrator')}
+                onClick={() => notifyWarn('Contact your administrator')}
               >
                 Contact Administrator
               </button>

@@ -1,51 +1,69 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import Navbar from "./components/Layout/Navbar";
 import Sidebar from "./components/Layout/Sidebar";
 import BottomNav from "./components/Layout/BottomNav";
-import Dashboard from "./WebView/dashboard";
-import AllUsersPage from "./WebView/UserManagement";
-import SystemLogs from "./WebView/systemlogs";
-import SystemSettings from "./WebView/systemsettings";
-import Reports from "./WebView/reports";
-import Employees from "./WebView/employees";
-import LeaveManagement from "./WebView/leavemanagement";
-import Attendance from "./WebView/attendance";
-import Recruitment from "./WebView/recruitment";
-import TeamManagement from "./WebView/teammanagement";
-import TaskManagement from "./WebView/taskmanagement";
-import Approvals from "./WebView/approvals";
-import MyTasks from "./WebView/mytask";
-import Profile from "./WebView/profile";
-import EmployeeAttendance from "./WebView/employeeattendance";
-import EmployeeTimeOff from "./WebView/employeetimeoff";
 import Login from "./components/Login/Login";
-import RoleManagement from "./WebView/rolemanagement";
-import ForgotPassword from "./components/ForgotPassword";
-import ResetPassword from "./components/ResetPassword";
-import Unauthorized from "./WebView/unauthorized";
-import OrgTreePage from "./WebView/orgtree";
-import Announcements from "./WebView/announcements";
-import Notifications from "./WebView/notifications";
-import Holidays from "./WebView/holidays";
-import Departments from "./WebView/departments";
-import Designations from "./WebView/designations";
-import Performance from "./WebView/performance";
-import WorkFromHome from "./WebView/workfromhome";
 import ForcePasswordChangeModal from "./components/ForcePasswordChangeModal";
-import ShiftManagement from "./WebView/shiftmanagement";
-import MyTeam from "./WebView/myteam";
-import Payroll from "./WebView/payroll";
-import MyPayslips from "./WebView/mypayslips";
-import Documents from "./WebView/documents";
-import Onboarding from "./WebView/onboarding";
-import Offboarding from "./WebView/offboarding";
-import Expenses from "./WebView/expenses";
-import Assets from "./WebView/assets";
 import AssistantWidget from "./components/AssistantWidget";
 import Toasts from "./components/Toasts";
+import { ConfirmHost } from "./components/ConfirmDialog";
 import { MeAPI, LogoutAPI } from "./components/Constant/Api/Api";
 import { applyTheme } from "./Utils/theme";
+
+// Every screen below is fetched the first time it is visited rather than bundled
+// into the page the reader lands on. Login is the exception — it is the entry
+// point, so splitting it would only add a round trip before anyone can sign in.
+//
+// The dashboards pull in recharts, which is large; leaving them eager would keep
+// the charting library in the initial download for a reader who may never open a
+// chart.
+const AllUsersPage = lazy(() => import("./WebView/UserManagement"));
+const Announcements = lazy(() => import("./WebView/announcements"));
+const Approvals = lazy(() => import("./WebView/approvals"));
+const Assets = lazy(() => import("./WebView/assets"));
+const Attendance = lazy(() => import("./WebView/attendance"));
+const Dashboard = lazy(() => import("./WebView/dashboard"));
+const Departments = lazy(() => import("./WebView/departments"));
+const Designations = lazy(() => import("./WebView/designations"));
+const Documents = lazy(() => import("./WebView/documents"));
+const EmployeeAttendance = lazy(() => import("./WebView/employeeattendance"));
+const EmployeeTimeOff = lazy(() => import("./WebView/employeetimeoff"));
+const Employees = lazy(() => import("./WebView/employees"));
+const Expenses = lazy(() => import("./WebView/expenses"));
+const ForgotPassword = lazy(() => import("./components/ForgotPassword"));
+const Holidays = lazy(() => import("./WebView/holidays"));
+const LeaveManagement = lazy(() => import("./WebView/leavemanagement"));
+const MyPayslips = lazy(() => import("./WebView/mypayslips"));
+const MyTasks = lazy(() => import("./WebView/mytask"));
+const MyTeam = lazy(() => import("./WebView/myteam"));
+const Notifications = lazy(() => import("./WebView/notifications"));
+const Offboarding = lazy(() => import("./WebView/offboarding"));
+const Onboarding = lazy(() => import("./WebView/onboarding"));
+const OrgTreePage = lazy(() => import("./WebView/orgtree"));
+const Payroll = lazy(() => import("./WebView/payroll"));
+const Performance = lazy(() => import("./WebView/performance"));
+const Profile = lazy(() => import("./WebView/profile"));
+const Recruitment = lazy(() => import("./WebView/recruitment"));
+const Reports = lazy(() => import("./WebView/reports"));
+const ResetPassword = lazy(() => import("./components/ResetPassword"));
+const RoleManagement = lazy(() => import("./WebView/rolemanagement"));
+const ShiftManagement = lazy(() => import("./WebView/shiftmanagement"));
+const SystemLogs = lazy(() => import("./WebView/systemlogs"));
+const SystemSettings = lazy(() => import("./WebView/systemsettings"));
+const TaskManagement = lazy(() => import("./WebView/taskmanagement"));
+const TeamManagement = lazy(() => import("./WebView/teammanagement"));
+const Unauthorized = lazy(() => import("./WebView/unauthorized"));
+const WorkFromHome = lazy(() => import("./WebView/workfromhome"));
+
+
+/** Shown while a screen's chunk is on its way. */
+const ScreenLoader = () => (
+  <div className="flex items-center justify-center py-24" role="status" aria-live="polite">
+    <div className="h-8 w-8 rounded-full border-2 border-gray-300 dark:border-slate-600 border-t-blue-600 dark:border-t-blue-400 animate-spin" />
+    <span className="sr-only">Loading…</span>
+  </div>
+);
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -156,24 +174,37 @@ function App() {
     );
   }
 
+  // Nothing but the password form until a new account has set its own password.
+  //
+  // This used to render over the top of the running application. The overlay hid
+  // it well enough, but every screen behind it still mounted and still asked the
+  // server for its data — and the server answers all of that with 428 until the
+  // password changes. Those refusals surfaced as a stack of error toasts saying
+  // what the dialog in front of them was already saying.
+  //
+  // Returning early means the requests are never made.
+  const onPasswordChanged = async () => {
+    // Re-read /me so mustChangePassword flips to false and the app appears.
+    try {
+      const res = await fetch(MeAPI, { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.data) setUser(data.data);
+      }
+    } catch { /* best effort — a failed read just leaves the form up */ }
+  };
+
+  if (isAuthenticated && user?.mustChangePassword) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-slate-900/40">
+        <ForcePasswordChangeModal user={user} onDone={onPasswordChanged} />
+        <Toasts />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-900/40 flex">
-      {/* Mandatory password change on first login */}
-      {isAuthenticated && user?.mustChangePassword && (
-        <ForcePasswordChangeModal
-          user={user}
-          onDone={async () => {
-            // Re-fetch /me so mustChangePassword flag becomes false
-            try {
-              const res = await fetch(MeAPI, { credentials: 'include' });
-              if (res.ok) {
-                const data = await res.json();
-                if (data.success && data.data) setUser(data.data);
-              }
-            } catch { /* best effort */ }
-          }}
-        />
-      )}
 
       {/* Sidebar - only show when authenticated */}
       {isAuthenticated && (
@@ -197,6 +228,7 @@ function App() {
           />
         )}
 
+        <Suspense fallback={<ScreenLoader />}>
         <Routes>
           {/* ✅ Login Route with onLogin prop */}
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
@@ -216,7 +248,7 @@ function App() {
           <Route
             path="/role-management"
             element={
-              <ProtectedRoute allowedRoles={['superadmin', 'admin']} requiredPermission="roles.view">
+              <ProtectedRoute allowedRoles={['superadmin', 'admin', 'hr']} requiredPermission="roles.view">
                 <RoleManagement user={user} />
               </ProtectedRoute>
             }
@@ -360,7 +392,7 @@ function App() {
           <Route
             path="/approvals"
             element={
-              <ProtectedRoute allowedRoles={['superadmin', 'admin', 'manager']} requiredPermission="approvals.view">
+              <ProtectedRoute allowedRoles={['superadmin', 'admin', 'hr', 'manager']} requiredPermission="approvals.view">
                 <Approvals user={user} />
               </ProtectedRoute>
             }
@@ -370,7 +402,7 @@ function App() {
           <Route
             path="/my-tasks"
             element={
-              <ProtectedRoute allowedRoles={['employee']} requiredPermission="mytasks.view">
+              <ProtectedRoute requiredPermission="mytasks.view">
                 <MyTasks currentUserEmail={user?.email} />
               </ProtectedRoute>
             }
@@ -483,6 +515,7 @@ function App() {
           {/* Catch all - redirect to dashboard */}
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
+        </Suspense>
       </div>
 
       {/* Mobile bottom navigation — hidden on lg+ */}
@@ -499,6 +532,7 @@ function App() {
       {/* Mounted once, outside the authenticated branch — a failed login needs
           to be able to say so as much as anything else does. */}
       <Toasts />
+      <ConfirmHost />
     </div>
   );
 }

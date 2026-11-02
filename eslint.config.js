@@ -7,8 +7,28 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
   globalIgnores(['dist']),
+
+  // The build's own config files run in Node, not a browser, so they need Node's
+  // globals — otherwise `module` reads as undefined and each one errors.
+  //
+  // They are split by module system because this project mixes the two. There is
+  // no "type": "module" in package.json, so a bare .js is CommonJS to Node; that
+  // is why postcss and tailwind use `module.exports`. Vite and ESLint, though,
+  // load their own config through a transform and accept ESM regardless — so
+  // those two are written with `import`. Linting either group under the other's
+  // sourceType is a parse error.
+  {
+    files: ['postcss.config.js', 'tailwind.config.js'],
+    languageOptions: { globals: globals.node, sourceType: 'commonjs' },
+  },
+  {
+    files: ['vite.config.js', 'eslint.config.js'],
+    languageOptions: { globals: globals.node, sourceType: 'module' },
+  },
+
   {
     files: ['**/*.{js,jsx}'],
+    ignores: ['*.config.js'],
     extends: [
       js.configs.recommended,
       reactHooks.configs['recommended-latest'],

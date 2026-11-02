@@ -1,13 +1,16 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
-  UserCog, UserPlus, Pencil, Trash2, Search, Filter, RefreshCcw,
+  UserCog, UserPlus, Pencil, Trash2, Search, Filter, RefreshCcw, FileSpreadsheet,
   Mail, Phone, Building2, Briefcase, Shield, CheckCircle2, XCircle, Users, IdCard, KeyRound
 } from "lucide-react";
 import AddUserModal from "../components/UserRole/AddUser";
+import BulkImportUsers from "../components/UserRole/BulkImportUsers";
 import ApiHit from "../Utils/ApiHit";
 import { GetAllUsersAPI, DeleteUserAPI, GetAllRolesAPI, ResetUserPasswordAPI } from "../components/Constant/Api/Api";
 import Pagination from "../components/Pagination";
 import { canModifyUser, hasPermission } from "../Utils/roleUtils";
+import { confirm } from '../Utils/confirm';
+import { notifyError } from '../Utils/notify';
 
 const PAGE_SIZE = 5;
 
@@ -28,6 +31,7 @@ const AllUsersPage = ({ user: currentUser }) => {
   const [roleFilter, setRoleFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [bulkOpen, setBulkOpen] = useState(false);
   const [editUser, setEditUser] = useState(null);
   const [loading, setLoading] = useState(false);
   const [busyId, setBusyId] = useState(null);
@@ -70,19 +74,19 @@ const AllUsersPage = ({ user: currentUser }) => {
     hasPermission(currentUser, 'users.password') && canModifyUser(currentUser, target);
 
   const handleDelete = async (id, name) => {
-    if (!window.confirm(`Delete "${name}"?`)) return;
+    if (!(await confirm(`Delete "${name}"?`))) return;
     setBusyId(id);
     try {
       const r = await ApiHit(DeleteUserAPI(id), "DELETE");
       if (r?.success) fetchUsers();
-      else alert(r?.message || 'Failed to delete');
+      else notifyError(r?.message || 'Failed to delete');
     } finally {
       setBusyId(null);
     }
   };
 
   const handleResetPassword = async (id, name) => {
-    if (!window.confirm(`Reset password for "${name}"? A temporary password will be generated and they'll be forced to change it on next login.`)) return;
+    if (!(await confirm(`Reset password for "${name}"? A temporary password will be generated and they'll be forced to change it on next login.`))) return;
     setBusyId(id);
     try {
       const r = await ApiHit(ResetUserPasswordAPI(id), "POST");
@@ -92,7 +96,7 @@ const AllUsersPage = ({ user: currentUser }) => {
           r.data?.tempPassword || ''
         );
       } else {
-        alert(r?.message || 'Failed to reset password');
+        notifyError(r?.message || 'Failed to reset password');
       }
     } finally {
       setBusyId(null);
@@ -144,6 +148,12 @@ const AllUsersPage = ({ user: currentUser }) => {
             className="flex items-center gap-1.5 text-sm bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/50 px-3 py-2 rounded-lg text-gray-700 dark:text-slate-200 transition"
           >
             <RefreshCcw size={14} /> Refresh
+          </button>
+          <button
+            onClick={() => setBulkOpen(true)}
+            className="flex items-center gap-1.5 text-sm bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-200 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition"
+          >
+            <FileSpreadsheet size={14} /> Import
           </button>
           <button
             onClick={() => { setEditUser(null); setIsModalOpen(true); }}
@@ -360,6 +370,12 @@ const AllUsersPage = ({ user: currentUser }) => {
       )}
 
       {/* Add/Edit User Modal */}
+      <BulkImportUsers
+        isOpen={bulkOpen}
+        onClose={() => setBulkOpen(false)}
+        onImported={fetchUsers}
+      />
+
       <AddUserModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

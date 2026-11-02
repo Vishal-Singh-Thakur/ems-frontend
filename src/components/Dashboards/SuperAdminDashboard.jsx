@@ -134,7 +134,10 @@ const SuperAdminDashboard = () => {
                     {recentLeaves.length === 0 ? (
                         <div className="text-xs text-gray-400 dark:text-slate-500 py-6 text-center">No leaves</div>
                     ) : (
-                        <table className="w-full text-sm">
+                        /* Five columns do not fit a phone; let them scroll rather than
+                            wrap each cell down to one word per line. */
+                        <div className="overflow-x-auto">
+                        <table className="w-full min-w-[440px] text-sm">
                             <thead>
                                 <tr className="text-[11px] text-gray-500 dark:text-slate-400 border-b">
                                     <th className="text-left py-2 font-medium">Employee</th>
@@ -162,6 +165,7 @@ const SuperAdminDashboard = () => {
                                 ))}
                             </tbody>
                         </table>
+                        </div>
                     )}
                 </div>
 

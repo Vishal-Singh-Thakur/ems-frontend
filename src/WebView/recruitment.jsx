@@ -3,6 +3,8 @@ import { Briefcase, Plus, Search, Users2, MapPin, TrendingUp, Filter, Lock, Unlo
 import ApiHit from "../Utils/ApiHit";
 import { GetAllJobPostingsAPI, CreateJobPostingAPI, UpdateJobStatusAPI } from "../components/Constant/Api/Api";
 import AddJobModal from "../components/HrEmployee/AddJobModal";
+import { confirm } from '../Utils/confirm';
+import { notifyError } from '../Utils/notify';
 
 const STATUS_STYLE = {
   Open: {
@@ -68,12 +70,12 @@ const Recruitment = ({ user }) => {
 
   const changeStatus = async (job, newStatus) => {
     if (!canManage) return;
-    if (!window.confirm(`Change status of "${job.jobTitle || job.title}" to ${newStatus}?`)) return;
+    if (!(await confirm(`Change status of "${job.jobTitle || job.title}" to ${newStatus}?`))) return;
     setBusyId(job._id);
     try {
       const r = await ApiHit(UpdateJobStatusAPI(job._id), "PATCH", { status: newStatus });
       if (r?.success) fetchAll();
-      else alert(r?.message || 'Failed to update status');
+      else notifyError(r?.message || 'Failed to update status');
     } finally {
       setBusyId(null);
     }

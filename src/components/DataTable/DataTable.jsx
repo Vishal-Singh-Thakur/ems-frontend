@@ -4,8 +4,13 @@ const DataTable = ({ th = [], td, totalPages, api, isLoading }) => {
   return (
     <div className="w-full border rounded-lg shadow-sm overflow-hidden bg-white dark:bg-slate-800">
 
-      {/* Table */}
-      <table className="w-full border-collapse">
+      {/* Table
+          The scroll lives on this wrapper, not the card, because the card also
+          holds the pagination — which should stay put while the columns move.
+          min-w keeps the columns readable instead of letting `w-full` crush them
+          into one word per line on a narrow screen. */}
+      <div className="overflow-x-auto">
+      <table className="w-full min-w-[640px] border-collapse">
         <thead className="bg-gray-100 dark:bg-slate-700/50 border-b">
           <tr>
             {th.map((h, i) => (
@@ -28,6 +33,7 @@ const DataTable = ({ th = [], td, totalPages, api, isLoading }) => {
           )}
         </tbody>
       </table>
+      </div>
 
       {/* Pagination */}
       {totalPages > 1 && (

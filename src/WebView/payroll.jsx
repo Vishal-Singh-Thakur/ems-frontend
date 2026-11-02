@@ -9,6 +9,8 @@ import {
   MarkPayrollPaidAPI, PayrollEligibleEmployeesAPI
 } from "../components/Constant/Api/Api";
 import Pagination from "../components/Pagination";
+import { confirm } from '../Utils/confirm';
+import { notifyError } from '../Utils/notify';
 
 const PAGE_SIZE = 5;
 
@@ -100,12 +102,12 @@ const Payroll = ({ user }) => {
   }, [list, nowY]);
 
   const handleDelete = async (p) => {
-    if (!window.confirm(`Delete payslip for ${p.employeeName} (${monthLabel(p.month)} ${p.year})?`)) return;
+    if (!(await confirm(`Delete payslip for ${p.employeeName} (${monthLabel(p.month)} ${p.year})?`))) return;
     setBusyId(p._id);
     try {
       const r = await ApiHit(DeletePayrollAPI(p._id), "DELETE");
       if (r?.success) fetchAll();
-      else alert(r?.message || 'Delete failed');
+      else notifyError(r?.message || 'Delete failed');
     } finally { setBusyId(null); }
   };
 
@@ -114,7 +116,7 @@ const Payroll = ({ user }) => {
     try {
       const r = await ApiHit(MarkPayrollPaidAPI(p._id), "PATCH", { paidOn: new Date().toISOString() });
       if (r?.success) fetchAll();
-      else alert(r?.message || 'Failed');
+      else notifyError(r?.message || 'Failed');
     } finally { setBusyId(null); }
   };
 
@@ -373,7 +375,7 @@ const PayrollModal = ({ mode, data, employees, onClose, onSuccess }) => {
             <h3 className="font-bold text-base sm:text-lg flex items-center gap-2"><Wallet size={18} /> {isEdit ? 'Edit Payslip' : 'Create Payslip'}</h3>
             <p className="text-[11px] sm:text-xs opacity-90 mt-0.5">Fill in the salary components below.</p>
           </div>
-          <button onClick={onClose} className="p-1 hover:bg-white/20 dark:hover:bg-slate-900/20 rounded"><X size={18} /></button>
+          <button aria-label="Close" onClick={onClose} className="p-1 hover:bg-white/20 dark:hover:bg-slate-900/20 rounded"><X size={18} /></button>
         </div>
 
         <form onSubmit={submit} className="p-4 sm:p-5 overflow-y-auto flex-1 space-y-4">
@@ -515,7 +517,7 @@ const PayslipViewer = ({ p, onClose }) => {
           <h3 className="font-semibold flex items-center gap-2"><FileText size={18} /> Payslip Preview</h3>
           <div className="flex items-center gap-2">
             <button onClick={handlePrint} className="flex items-center gap-1 text-sm bg-white/20 dark:bg-slate-900/20 hover:bg-white/30 dark:hover:bg-slate-900/30 px-3 py-1.5 rounded"><Printer size={14} /> Print</button>
-            <button onClick={onClose} className="p-1 hover:bg-white/20 dark:hover:bg-slate-900/20 rounded"><X size={18} /></button>
+            <button aria-label="Close" onClick={onClose} className="p-1 hover:bg-white/20 dark:hover:bg-slate-900/20 rounded"><X size={18} /></button>
           </div>
         </div>
 

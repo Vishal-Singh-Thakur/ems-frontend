@@ -12,6 +12,8 @@ import {
 } from "../components/Constant/Api/Api";
 import WfhRequestModal from "../components/Employee/WfhRequestModal";
 import Pagination from "../components/Pagination";
+import { confirm } from '../Utils/confirm';
+import { notifyError } from '../Utils/notify';
 
 const PAGE_SIZE = 5;
 
@@ -96,12 +98,12 @@ const WorkFromHome = ({ user }) => {
   useEffect(() => { fetchAll(); /* eslint-disable-next-line */ }, []);
 
   const handleApprove = async (id) => {
-    if (!window.confirm('Approve this WFH request?')) return;
+    if (!(await confirm('Approve this WFH request?'))) return;
     setBusyId(id);
     try {
       const r = await ApiHit(ApproveLeaveAPI(id), "PATCH");
       if (r?.success) fetchAll();
-      else alert(r?.message || 'Failed');
+      else notifyError(r?.message || 'Failed');
     } finally { setBusyId(null); }
   };
 
@@ -112,7 +114,7 @@ const WorkFromHome = ({ user }) => {
     try {
       const r = await ApiHit(RejectLeaveAPI(id), "PATCH", { rejectionReason: reason });
       if (r?.success) fetchAll();
-      else alert(r?.message || 'Failed');
+      else notifyError(r?.message || 'Failed');
     } finally { setBusyId(null); }
   };
 

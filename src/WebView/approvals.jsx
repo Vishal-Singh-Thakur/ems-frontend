@@ -12,6 +12,7 @@ import {
   GetMyTeamAPI,
 } from "../components/Constant/Api/Api";
 import Pagination from "../components/Pagination";
+import { notifyError } from '../Utils/notify';
 
 const PAGE_SIZE = 5;
 
@@ -170,7 +171,7 @@ const Approvals = () => {
           )
         );
       } else {
-        alert(r?.message || 'Failed');
+        notifyError(r?.message || 'Failed');
       }
     } finally {
       setBusyId(null);

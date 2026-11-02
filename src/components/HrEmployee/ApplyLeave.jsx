@@ -21,7 +21,7 @@
 //     const { employee, type, from, to } = formData;
 
 //     if (!employee || !type || !from || !to) {
-//       return alert("Please fill all fields");
+//       return notifyWarn("Please fill all fields");
 //     }
 
 //     onSave({
@@ -94,8 +94,6 @@
 // };
 
 // export default ApplyLeave;
-
-
 
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";

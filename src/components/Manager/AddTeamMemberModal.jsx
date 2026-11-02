@@ -218,7 +218,7 @@
 //       const response = await ApiHit(AddTeamMemberAPI, "POST", form);
 
 //       if (response.success) {
-//         alert("Team member added successfully!");
+//         notifyOk("Team member added successfully!");
 
 //         // Reset form
 //         setForm({
@@ -235,11 +235,11 @@
 //           onSuccess();
 //         }
 //       } else {
-//         alert(response.message || "Failed to add team member");
+//         notifyError(response.message || "Failed to add team member");
 //       }
 //     } catch (err) {
 //       console.error("Error adding team member:", err);
-//       alert("Network error. Please try again.");
+//       notifyError("Network error. Please try again.");
 //     } finally {
 //       setLoading(false);
 //     }
@@ -380,6 +380,7 @@
 
 import React, { useEffect, useState } from "react";
 import ApiHit from "../../Utils/ApiHit";
+import { notifyError, notifyOk, notifyWarn } from '../../Utils/notify';
 import {
   AddTeamMemberAPI,
   GetAllUsersAPI,
@@ -428,7 +429,7 @@ const AddTeamMemberModal = ({ open, setOpen, onSuccess }) => {
     e.preventDefault();
 
     if (!selectedUser) {
-      alert("Please select an employee");
+      notifyWarn("Please select an employee");
       return;
     }
 
@@ -440,16 +441,16 @@ const AddTeamMemberModal = ({ open, setOpen, onSuccess }) => {
       });
 
       if (res?.success) {
-        alert("Member added successfully");
+        notifyOk("Member added successfully");
         setSelectedUser("");
         setOpen(false);
         onSuccess && onSuccess();
       } else {
-        alert(res?.message || "Failed to add member");
+        notifyError(res?.message || "Failed to add member");
       }
     } catch (err) {
       console.error(err);
-      alert("Network error");
+      notifyError("Network error");
     } finally {
       setLoading(false);
     }

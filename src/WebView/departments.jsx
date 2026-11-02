@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Building2, Plus, Pencil, Trash2, X, Users2, ToggleLeft, ToggleRight } from "lucide-react";
 import ApiHit from "../Utils/ApiHit";
+import { confirm } from '../Utils/confirm';
+import { notifyError } from '../Utils/notify';
 import {
   GetAllDepartmentsAPI,
   CreateDepartmentAPI,
@@ -75,7 +77,7 @@ const Departments = ({ user }) => {
       const method = editingId ? 'PUT' : 'POST';
       const r = await ApiHit(url, method, form);
       if (r?.success) { closeModal(); fetchAll(); }
-      else alert(r?.message || 'Failed');
+      else notifyError(r?.message || 'Failed');
     } finally {
       setSubmitting(false);
     }
@@ -84,14 +86,14 @@ const Departments = ({ user }) => {
   const handleToggle = async (d) => {
     const r = await ApiHit(ToggleDepartmentStatusAPI(d._id), 'PUT');
     if (r?.success) fetchAll();
-    else alert(r?.message || 'Failed');
+    else notifyError(r?.message || 'Failed');
   };
 
   const handleDelete = async (d) => {
-    if (!window.confirm(`Delete "${d.name}"?`)) return;
+    if (!(await confirm(`Delete "${d.name}"?`))) return;
     const r = await ApiHit(DeleteDepartmentAPI(d._id), 'DELETE');
     if (r?.success) fetchAll();
-    else alert(r?.message || 'Failed');
+    else notifyError(r?.message || 'Failed');
   };
 
   return (
@@ -173,7 +175,7 @@ const Departments = ({ user }) => {
               <h3 className="font-semibold text-gray-800 dark:text-slate-100 flex items-center gap-2">
                 <Building2 size={18} className="text-blue-600 dark:text-blue-400" /> {editingId ? 'Edit Department' : 'Add Department'}
               </h3>
-              <button onClick={closeModal} className="p-1 hover:bg-gray-100 dark:hover:bg-slate-700 rounded"><X size={18} /></button>
+              <button aria-label="Close" onClick={closeModal} className="p-1 hover:bg-gray-100 dark:hover:bg-slate-700 rounded"><X size={18} /></button>
             </div>
             <form onSubmit={handleSubmit} className="p-5 space-y-4">
               <div>

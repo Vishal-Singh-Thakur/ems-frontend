@@ -196,7 +196,7 @@ const PayslipViewer = ({ p, onClose }) => {
           <h3 className="font-semibold flex items-center gap-2"><FileText size={18} /> Payslip</h3>
           <div className="flex items-center gap-2">
             <button onClick={handlePrint} className="flex items-center gap-1 text-sm bg-white/20 dark:bg-slate-900/20 hover:bg-white/30 dark:hover:bg-slate-900/30 px-3 py-1.5 rounded"><Printer size={14} /> Print</button>
-            <button onClick={onClose} className="p-1 hover:bg-white/20 dark:hover:bg-slate-900/20 rounded"><X size={18} /></button>
+            <button aria-label="Close" onClick={onClose} className="p-1 hover:bg-white/20 dark:hover:bg-slate-900/20 rounded"><X size={18} /></button>
           </div>
         </div>
 

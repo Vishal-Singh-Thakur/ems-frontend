@@ -9,6 +9,8 @@ import {
   OnboardingTemplateAPI, OnboardingTemplateStepAPI, OnboardingCancelAPI
 } from "../components/Constant/Api/Api";
 import { hasPermission } from "../Utils/roleUtils";
+import { confirm } from '../Utils/confirm';
+import { notifyError } from '../Utils/notify';
 
 const ROLE_LABEL = { hr: "HR", admin: "IT / Admin", manager: "Manager", employee: "Employee" };
 const ROLE_PILL = {
@@ -117,15 +119,15 @@ const TemplateEditor = ({ onClose, onChanged }) => {
         ? await ApiHit(OnboardingTemplateStepAPI(editing._id), "PUT", editing)
         : await ApiHit(OnboardingTemplateAPI, "POST", editing);
       if (r?.success) { setEditing(null); await load(); onChanged?.(); }
-      else alert(r?.message || "Save failed");
+      else notifyError(r?.message || "Save failed");
     } finally { setSaving(false); }
   };
 
   const remove = async (id, title) => {
-    if (!window.confirm(`Delete "${title}"?`)) return;
+    if (!(await confirm(`Delete "${title}"?`))) return;
     const r = await ApiHit(OnboardingTemplateStepAPI(id), "DELETE");
     if (r?.success) { await load(); onChanged?.(); }
-    else alert(r?.message || "Delete failed");
+    else notifyError(r?.message || "Delete failed");
   };
 
   return (
@@ -141,7 +143,7 @@ const TemplateEditor = ({ onClose, onChanged }) => {
               These steps are assigned automatically to every new employee.
             </p>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-500">
+          <button aria-label="Close" onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-500">
             <X size={18} />
           </button>
         </div>
@@ -264,7 +266,7 @@ const Onboarding = ({ user }) => {
         const mine = await ApiHit(OnboardingMyStepsAPI, "GET");
         if (mine?.success) setMySteps(mine.data || []);
       } else {
-        alert(r?.message || "Update failed");
+        notifyError(r?.message || "Update failed");
       }
     } finally {
       setBusyId(null);
@@ -272,10 +274,10 @@ const Onboarding = ({ user }) => {
   };
 
   const cancel = async (id, name) => {
-    if (!window.confirm(`Cancel onboarding for ${name}?`)) return;
+    if (!(await confirm(`Cancel onboarding for ${name}?`))) return;
     const r = await ApiHit(OnboardingCancelAPI(id), "PATCH");
     if (r?.success) load();
-    else alert(r?.message || "Cancel failed");
+    else notifyError(r?.message || "Cancel failed");
   };
 
   const stats = useMemo(() => ({

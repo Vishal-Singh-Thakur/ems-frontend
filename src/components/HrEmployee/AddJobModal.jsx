@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Briefcase, Building2, Users, CheckCircle, X, IdCard } from "lucide-react";
 import ApiHit from "../../Utils/ApiHit";
 import { GetAllDepartmentsAPI, GetAllJobRolesAPI } from "../Constant/Api/Api";
+import { notifyError } from '../../Utils/notify';
 
 const AddJobModal = ({ open, setOpen, jobs, setJobs, apiCreate }) => {
   const [form, setForm] = useState({
@@ -75,7 +76,7 @@ const AddJobModal = ({ open, setOpen, jobs, setJobs, apiCreate }) => {
           setOpen(false);
           setForm({ departmentId: "", jobTitle: "", openings: "", status: "Open", description: "" });
         } else {
-          alert(r?.message || 'Failed to save');
+          notifyError(r?.message || 'Failed to save');
         }
       } else {
         // Fallback: local state only (for backwards compat if called without apiCreate)

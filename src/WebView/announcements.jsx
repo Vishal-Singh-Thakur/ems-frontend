@@ -7,6 +7,8 @@ const FILE_BASE = (BASE_URL || "").replace(/\/api\/?$/, "");
 const fileUrl = (p) => (p && p.startsWith("/") ? `${FILE_BASE}${p}` : p || "");
 import ApiHit from "../Utils/ApiHit";
 import EmojiPicker from "../components/EmojiPicker";
+import { confirm } from '../Utils/confirm';
+import { notifyError, notifyWarn } from '../Utils/notify';
 import {
   GetAnnouncementsAPI,
   CreateAnnouncementAPI,
@@ -75,7 +77,7 @@ const AnnouncementCard = ({ a, currentUserId, canPost, onChanged, onDelete, onEd
         setCommentText('');
         onChanged();
       } else {
-        alert(r?.message || 'Failed to add comment');
+        notifyError(r?.message || 'Failed to add comment');
       }
     } finally {
       setCommentBusy(false);
@@ -101,7 +103,7 @@ const AnnouncementCard = ({ a, currentUserId, canPost, onChanged, onDelete, onEd
       setEditCommentText('');
       onChanged();
     } else {
-      alert(r?.message || 'Failed to update comment');
+      notifyError(r?.message || 'Failed to update comment');
     }
   };
 
@@ -119,7 +121,7 @@ const AnnouncementCard = ({ a, currentUserId, canPost, onChanged, onDelete, onEd
         setReplyTo(null);
         onChanged();
       } else {
-        alert(r?.message || 'Failed to reply');
+        notifyError(r?.message || 'Failed to reply');
       }
     } finally {
       setReplyBusy(false);
@@ -127,10 +129,10 @@ const AnnouncementCard = ({ a, currentUserId, canPost, onChanged, onDelete, onEd
   };
 
   const removeComment = async (commentId) => {
-    if (!window.confirm('Delete this comment?')) return;
+    if (!(await confirm('Delete this comment?'))) return;
     const r = await ApiHit(DeleteCommentAPI(a._id, commentId), "DELETE");
     if (r?.success) onChanged();
-    else alert(r?.message || 'Failed to delete');
+    else notifyError(r?.message || 'Failed to delete');
   };
 
   const toggleCommentLike = async (commentId) => {
@@ -455,11 +457,11 @@ const Announcements = ({ user }) => {
     const f = e.target.files?.[0];
     if (!f) return;
     if (!/^image\//i.test(f.type)) {
-      alert('Please choose an image file');
+      notifyWarn('Please choose an image file');
       return;
     }
     if (f.size > 5 * 1024 * 1024) {
-      alert('Image must be under 5 MB');
+      notifyWarn('Image must be under 5 MB');
       return;
     }
     setImageFile(f);
@@ -527,10 +529,10 @@ const Announcements = ({ user }) => {
   };
 
   const handleDelete = async (id, title) => {
-    if (!window.confirm(`Delete announcement "${title}"?`)) return;
+    if (!(await confirm(`Delete announcement "${title}"?`))) return;
     const r = await ApiHit(DeleteAnnouncementAPI(id), "DELETE");
     if (r?.success) fetchAll();
-    else alert(r?.message || 'Failed to delete');
+    else notifyError(r?.message || 'Failed to delete');
   };
 
   return (
@@ -607,7 +609,7 @@ const Announcements = ({ user }) => {
               <h3 className="font-semibold text-gray-800 dark:text-slate-100 flex items-center gap-2">
                 <Megaphone size={18} className="text-blue-600 dark:text-blue-400" /> {editingId ? 'Edit Announcement' : 'New Announcement'}
               </h3>
-              <button onClick={closeModal} className="p-1 hover:bg-gray-100 dark:hover:bg-slate-700 rounded"><X size={18} /></button>
+              <button aria-label="Close" onClick={closeModal} className="p-1 hover:bg-gray-100 dark:hover:bg-slate-700 rounded"><X size={18} /></button>
             </div>
             <form onSubmit={handleSubmit} className="p-5 space-y-4">
               {errors.length > 0 && (

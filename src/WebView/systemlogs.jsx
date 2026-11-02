@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Trash2, ScrollText } from "lucide-react";
 import ApiHit from "../Utils/ApiHit";
 import DataTable from "../components/DataTable/DataTable";
 import { CleanupSystemLogsAPI, GetAllSystemLogsAPI } from "../components/Constant/Api/Api";
+import { confirm } from '../Utils/confirm';
+import { notifyError, notifyOk } from '../Utils/notify';
 
 const SystemLogs = () => {
   const [logs, setLogs] = useState([]);
@@ -62,7 +64,7 @@ const SystemLogs = () => {
 
   // Cleanup old logs
   const handleCleanup = async () => {
-    if (!window.confirm("Are you sure you want to cleanup old logs? This action cannot be undone.")) {
+    if (!(await confirm("Are you sure you want to cleanup old logs? This action cannot be undone."))) {
       return;
     }
 
@@ -73,17 +75,17 @@ const SystemLogs = () => {
       const response = await ApiHit(CleanupSystemLogsAPI, "DELETE");
 
       if (response.success) {
-        alert("Old logs cleaned up successfully!");
+        notifyOk("Old logs cleaned up successfully!");
         setCurrentPage(1);
         fetchSystemLogs(1);
       } else {
         setError(response.message || "Failed to cleanup logs");
-        alert("Failed to cleanup logs");
+        notifyError("Failed to cleanup logs");
       }
     } catch (err) {
       console.error("Error cleaning logs:", err);
       setError("Network error while cleaning logs");
-      alert("Network error. Please try again.");
+      notifyError("Network error. Please try again.");
     } finally {
       setCleaning(false);
     }
@@ -204,8 +206,13 @@ const SystemLogs = () => {
 
   return (
     <div className="p-3 sm:p-5 md:p-8 lg:p-10">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold">System Logs</h1>
+      <div className="mb-6 flex items-start justify-between gap-3 sm:gap-4 flex-wrap">
+        <div>
+          <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 dark:text-slate-100 flex items-center gap-2">
+            <ScrollText className="text-blue-600 dark:text-blue-400" /> System Logs
+          </h1>
+          <p className="text-sm text-gray-500 dark:text-slate-400">Every recorded action, newest first.</p>
+        </div>
         
         <Button 
           onClick={handleCleanup}

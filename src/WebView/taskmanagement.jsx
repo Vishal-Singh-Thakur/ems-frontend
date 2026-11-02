@@ -5,6 +5,8 @@ import ApiHit from "../Utils/ApiHit";
 import { GetAllTasksAPI, DeleteTaskAPI } from "../components/Constant/Api/Api";
 import AddTaskModal from "../components/Manager/AddTaskModal";
 import Pagination from "../components/Pagination";
+import { confirm } from '../Utils/confirm';
+import { notifyError } from '../Utils/notify';
 
 const PAGE_SIZE = 5;
 
@@ -59,12 +61,12 @@ const TaskManagement = ({ user }) => {
   };
 
   const handleDelete = async (task) => {
-    if (!window.confirm(`Delete "${task.title}"?`)) return;
+    if (!(await confirm(`Delete "${task.title}"?`))) return;
     setBusyId(task._id);
     try {
       const r = await ApiHit(DeleteTaskAPI(task._id), "DELETE");
       if (r?.success) fetchTasks();
-      else alert(r?.message || "Failed");
+      else notifyError(r?.message || "Failed");
     } finally {
       setBusyId(null);
     }

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { User, Mail, Briefcase, Phone, Building2, Shield, Camera, Calendar, Home, PhoneCall, IdCard, FileText, Upload, Trash2, Download, Eye, CheckCircle2, AlertCircle, Loader2, FileImage, FileType2, File as FileIcon } from "lucide-react";
 import ApiHit from "../Utils/ApiHit";
 import { DocumentFileAPI, GetMyProfileAPI, UpdateMyProfileAPI, UploadMyDocumentAPI, DeleteMyDocumentAPI } from "../components/Constant/Api/Api";
+import { confirm } from '../Utils/confirm';
+import { notifyError, notifyWarn } from '../Utils/notify';
 
 
 const DOCUMENT_CATEGORIES = ['ID Proof', 'Address Proof', 'Educational', 'Experience', 'Other'];
@@ -169,8 +171,8 @@ const Profile = () => {
 
   const handleDocUpload = async (e) => {
     e.preventDefault();
-    if (!docFile) { alert('Please select a file'); return; }
-    if (!docLabel.trim()) { alert('Please enter a document label'); return; }
+    if (!docFile) { notifyWarn('Please select a file'); return; }
+    if (!docLabel.trim()) { notifyWarn('Please enter a document label'); return; }
     try {
       setUploadBusy(true);
       const fd = new FormData();
@@ -182,7 +184,7 @@ const Profile = () => {
         setDocLabel(''); setDocFile(null); setDocCategory('ID Proof');
         await fetchProfile();
       } else {
-        alert(res?.message || 'Upload failed');
+        notifyError(res?.message || 'Upload failed');
       }
     } finally {
       setUploadBusy(false);
@@ -190,12 +192,12 @@ const Profile = () => {
   };
 
   const handleDocDelete = async (docId) => {
-    if (!window.confirm('Delete this document?')) return;
+    if (!(await confirm('Delete this document?'))) return;
     try {
       setDeletingId(docId);
       const res = await ApiHit(DeleteMyDocumentAPI(docId), "DELETE");
       if (res?.success) await fetchProfile();
-      else alert(res?.message || 'Delete failed');
+      else notifyError(res?.message || 'Delete failed');
     } finally {
       setDeletingId(null);
     }

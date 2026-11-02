@@ -4,6 +4,7 @@ import ApiDropdown from "../ApiDropdown";
 import ApiHit from "../../Utils/ApiHit";
 import { CreateRoleAPI, UpdateRoleAPI } from "../Constant/Api/Api";
 import PermissionsManager from "../Permission/permissions";
+import { notifyOk } from '../../Utils/notify';
 
 const REGEX_PATTERNS = {
   name: /^[A-Za-z ]{3,30}$/,
@@ -87,7 +88,7 @@ const AddRole = ({ onClose, onSubmit, editData = null }) => {
       }
 
       if (response.success) {
-        alert(response.message || (editData ? "Role updated successfully!" : "Role created successfully!"));
+        notifyOk(response.message || (editData ? "Role updated successfully!" : "Role created successfully!"));
         onSubmit(response.data);
         onClose();
       } else {

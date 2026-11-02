@@ -27,6 +27,8 @@ export const DeleteUserAPI = (id) => UserService + id + "/delete-user";
 export const ResetUserPasswordAPI = (id) => UserService + id + "/reset-password";
 export const ToggleUserStatusAPI = (id) => UserService + id + "/toggle-status";
 export const ChangeUserPasswordAPI = UserService + "change-password";
+export const BulkImportUsersAPI = UserService + "bulk-import";
+export const BulkImportTemplateAPI = UserService + "bulk-import/template";
 
 /* ================= DEPARTMENT ================= */
 export const DepartmentService = BASE_URL + "/departments";
